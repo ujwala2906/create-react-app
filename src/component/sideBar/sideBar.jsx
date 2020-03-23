@@ -8,8 +8,7 @@ import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 
 
 // features
-import StyleTreeItem from "./feature/styleTreeItem";
-import TreeViewItem from "./feature/treeViewItem";
+import {StyleTreeItem, TreeViewItem} from "./feature";
 import { ScrollItem } from "./style";
 
 const SideBar = () => {

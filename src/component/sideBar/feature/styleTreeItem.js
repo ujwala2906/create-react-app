@@ -33,14 +33,9 @@ const StyleTreeItem = (props) => {
         </>
     )
 };
-StyleTreeItem.defaultProps = {
-    labelText: "",
-    labelIcon: [{}]
-};
-
 
 StyleTreeItem.propTypes = {
-    labelText:PropTypes.string,
+    labelText:PropTypes.string.isRequired,
     labelIcon: PropTypes.elementType.isRequired,
 };
 
