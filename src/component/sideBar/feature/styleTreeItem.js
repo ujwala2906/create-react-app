@@ -28,15 +28,20 @@ const StyleTreeItem = (props) => {
                     group: classes.group,
                     label: classes.label
                 }}
-                { ...other }
+                {...other}
             />
         </>
     )
 };
+StyleTreeItem.defaultProps = {
+    labelText: "",
+    labelIcon: [{}]
+};
+
 
 StyleTreeItem.propTypes = {
     labelText:PropTypes.string,
-    LabelIcon:PropTypes.shape(PropTypes.object),
+    labelIcon: PropTypes.elementType.isRequired,
 };
 
 export default StyleTreeItem;

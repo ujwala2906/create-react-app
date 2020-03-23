@@ -28,6 +28,9 @@ const TreeViewItem = (props) => {
         </>
     )
 };
+TreeViewItem.defaultProps = {
+    labelText: "",
+};
 
 TreeViewItem.propTypes = {
     labelText: PropTypes.string,
