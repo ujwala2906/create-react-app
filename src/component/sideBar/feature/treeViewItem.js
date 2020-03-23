@@ -1,20 +1,19 @@
 import React from 'react';
 import TreeItem from "@material-ui/lab/TreeItem";
 import Typography from "@material-ui/core/Typography";
+import PropTypes from "prop-types";
 
 import { useTreeItemStyles } from "../style";
-import { height } from '@material-ui/system';
 
-const StyleTreeItem = (props) => {
+const TreeViewItem = (props) => {
     const classes = useTreeItemStyles();
-    const { labelText, labelIcon: LabelIcon, ...other } = props;
-
+    const { labelText, ...other } = props;
     return (
         <>
             <TreeItem
+                nodeId="3"
                 label={
-                    <div className={classes.labelRoot}>
-                        <LabelIcon color="inherit" className={classes.labelIcon} />
+                    <div className={classes.labelRoot} >
                         <Typography variant="subtitle1" className={classes.labelText}>
                             {labelText}
                         </Typography>
@@ -22,11 +21,7 @@ const StyleTreeItem = (props) => {
                 }
                 classes={{
                     root: classes.root,
-                    content: classes.content,
-                    expanded: classes.expanded,
-                    selected: classes.selected,
-                    group: classes.group,
-                    label: classes.label
+                    content: classes.content
                 }}
                 {...other}
             />
@@ -34,4 +29,8 @@ const StyleTreeItem = (props) => {
     )
 };
 
-export default StyleTreeItem;
+TreeViewItem.propTypes = {
+    labelText: PropTypes.string,
+};
+
+export default TreeViewItem;
