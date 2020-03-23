@@ -9,6 +9,7 @@ import ArrowRightIcon from "@material-ui/icons/ArrowRight";
 // features
 import StyleTreeItem from "./feature/styleTreeItem";
 import TreeViewItem from "./feature/treeViewItem";
+import { ScrollItem } from "./style";
 
 const SideBar = () => {
   const useStyles = makeStyles({
@@ -22,31 +23,33 @@ const SideBar = () => {
 
   return (
     <>
-      <TreeView
-        className={classes1.root}
-        defaultCollapseIcon={<ArrowDropDownIcon />}
-        defaultExpandIcon={<ArrowRightIcon />}
-      >
-        <StyleTreeItem
-          nodeId="1"
-          labelText="Browse Tools"
-          labelIcon={DashboardIcon}
+      <ScrollItem>
+        <TreeView 
+          className={classes1.root}
+          defaultCollapseIcon={<ArrowDropDownIcon />}
+          defaultExpandIcon={<ArrowRightIcon />}
         >
-          <TreeViewItem nodeId="2" labelText="All" />
-          <TreeViewItem nodeId="3" labelText="Insight Type">
-            <TreeViewItem nodeId="4" labelText="Audience" />
-            <TreeViewItem nodeId="5" labelText="Business Intelligence" />
-            <TreeViewItem nodeId="6" labelText="Category & Competitive" />
-            <TreeViewItem nodeId="7" labelText="Culture & Trends" />
-            <TreeViewItem nodeId="8" labelText="Media" />
-          </TreeViewItem>
-        </StyleTreeItem>
-        <StyleTreeItem
-          nodeId="9"
-          labelText="Saved Tools"
-          labelIcon={BookmarkIcon}
-        />
-      </TreeView>
+          <StyleTreeItem
+            nodeId="1"
+            labelText="Browse Tools"
+            labelIcon={DashboardIcon}
+          >
+            <TreeViewItem nodeId="2" labelText="All" />
+            <TreeViewItem nodeId="3" labelText="Insight Type">
+              <TreeViewItem nodeId="4" labelText="Audience" />
+              <TreeViewItem nodeId="5" labelText="Business Intelligence" />
+              <TreeViewItem nodeId="6" labelText="Category & Competitive" />
+              <TreeViewItem nodeId="7" labelText="Culture & Trends" />
+              <TreeViewItem nodeId="8" labelText="Media" />
+            </TreeViewItem>
+          </StyleTreeItem>
+          <StyleTreeItem
+            nodeId="9"
+            labelText="Saved Tools"
+            labelIcon={BookmarkIcon}
+          />
+        </TreeView>
+      </ScrollItem>
     </>
   );
 };

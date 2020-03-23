@@ -2,11 +2,13 @@ import React from 'react';
 import TreeItem from "@material-ui/lab/TreeItem";
 import Typography from "@material-ui/core/Typography";
 
-import useTreeItemStyles from "../style";
+import { useTreeItemStyles } from "../style";
+import { height } from '@material-ui/system';
 
 const StyleTreeItem = (props) => {
     const classes = useTreeItemStyles();
     const { labelText, labelIcon: LabelIcon, ...other } = props;
+
     return (
         <>
             <TreeItem
