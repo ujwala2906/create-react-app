@@ -157,7 +157,7 @@ const Endorsement = () => {
         onClose={handleAlertClose}
       >
         <Alert severity="error">Endorsement Already exist!</Alert>
-      </Snackbar>
+      </Snackbar> 
 
       <Card variant="outlined" className={classes.root}>
         <Typography variant="subtitle1" component="p">

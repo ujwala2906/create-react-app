@@ -127,17 +127,23 @@ const Modal = (props) => {
     )
 }
 
+Modal.defaultProps = {
+    message: '',
+    error: false,
+    value: '',
+}
+
 Modal.propTypes = {
-    handleClose:PropTypes.func,
-    value:PropTypes.string,
-    handleChange:PropTypes.func,
-    handleValidate:PropTypes.func,
-    message:PropTypes.string,
-    error:PropTypes.bool,
-    handleAddEndorsement:PropTypes.func,
-    suggestions:PropTypes.arrayOf(PropTypes.object),
-    addSuggestions:PropTypes.func,
-    renderChips:PropTypes.string,
-    endorsement:PropTypes.arrayOf(PropTypes.object)
+    handleClose: PropTypes.func.isRequired,
+    value: PropTypes.string,
+    handleChange: PropTypes.func.isRequired,
+    handleValidate: PropTypes.func.isRequired,
+    message: PropTypes.string,
+    error: PropTypes.bool,
+    handleAddEndorsement: PropTypes.func.isRequired,
+    suggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
+    addSuggestions: PropTypes.func.isRequired,
+    renderChips: PropTypes.func.isRequired,
+    endorsement: PropTypes.arrayOf(PropTypes.object).isRequired
 };
 export default Modal;
