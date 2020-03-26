@@ -1,61 +1,169 @@
-import React, { useState } from "react";
-import { withStyles } from "@material-ui/core/styles";
-import MuiDialogTitle from "@material-ui/core/DialogTitle";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Typography,
   CardActions,
   IconButton,
-  Dialog,
-  DialogContent,
-  TextField,
-  Chip,
-  DialogActions
+  Snackbar,
+  CardContent,
+  Chip
 } from "@material-ui/core";
 import AddCircleIcon from "@material-ui/icons/AddCircle";
-import AddBoxIcon from "@material-ui/icons/AddBox";
-import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
+import MuiAlert from "@material-ui/lab/Alert";
 import AddIcon from "@material-ui/icons/Add";
-import CloseIcon from "@material-ui/icons/Close";
 
-import { useStyles, styles } from "./style";
+import validate from "./yup";
+
+import { useStyles } from "./style";
+
+import { Modal } from "./features";
 
 const Endorsement = () => {
-  const [open, setOpen] = useState(false);
-
   const classes = useStyles();
+  const [open, setOpen] = useState(false);
+  const [openAlert, setOpenAlert] = React.useState(false);
+  const [value, setValue] = useState("");
+  const [endorsement, setEndorsement] = useState([]);
+
+  const handleAlert = () => {
+    setOpenAlert(true);
+  };
+
+  const handleAlertClose = () => {
+    setOpenAlert(false);
+  };
+
+  const suggestions = [
+    "Easy to use",
+    "Requires training",
+    "Informative charts",
+    "Detailed Reports",
+    "Easy reading",
+    "Good for trends"
+  ];
+
   const handleClick = () => {
     setOpen(true);
   };
   const handleClose = () => {
     setOpen(false);
   };
+  const handleChange = e => {
+    setValue(e.target.value);
+  };
 
-  const DialogTitle = withStyles(styles)(props => {
-    const { children, classes, onClose, ...other } = props;
+  const Alert = props => {
+    return <MuiAlert elevation={6} variant="filled" {...props} />;
+  };
+
+  const [message, setMessage] = useState("");
+  const [error, setError] = useState(false);
+
+  const handleValidate = async (field, value) => {
+    let validationError = await validate(field, value);
+    if (validationError) {
+      setError(true);
+      setMessage(validationError);
+    } else {
+      setError(false);
+      setMessage("");
+    }
+  };
+
+  const handleAddEndorsement = () => {
+    if (!error && !message) {
+      const checkValue = endorsement.includes(value);
+      if (!checkValue) {
+        setEndorsement(preState => [...preState, value]);
+        setValue("");
+      } else {
+        handleAlert();
+      }
+    }
+  };
+
+  const addSuggestions = item => {
+    setValue(item);
+  };
+
+  useEffect(() => {
+    const count = endorsement.length;
+    console.log("count", count);
+    if (count >= 5) {
+      const PageNumebr = endorsement.slice();
+    }
+  }, [endorsement]);
+
+  const handleRemove = item => {
+    const index = endorsement.indexOf(item);
+    if (index >= 0) {
+      endorsement.splice(index, 1);
+      setEndorsement(preState => [...preState]);
+    }
+  };
+
+  const renderChips = () => {
     return (
-      <MuiDialogTitle disableTypography className={classes.root} {...other}>
-        <Typography variant="h6">{children}</Typography>
-        {onClose ? (
-          <IconButton
-            aria-label="close"
-            className={classes.closeButton}
-            onClick={onClose}
-          >
-            <CloseIcon />
-          </IconButton>
-        ) : null}
-      </MuiDialogTitle>
+      <>
+        {endorsement.map((item, index) => (
+          <Chip
+            size="small"
+            icon={<AddIcon fontSize="inherit" />}
+            label={item}
+            id={`${index}small`}
+            key={`${index}small`}
+            onClick={value => handleRemove(item)}
+            style={{margin:5}}
+          />
+        ))}
+      </>
     );
-  });
+  };
+
+  const renderCardChips = () => {
+    if (endorsement.length > 0) {
+      const newEndorsement = endorsement.slice(0, 2);
+      let count;
+      if (endorsement.length > 2) {
+        count = parseInt(endorsement.length) - 2;
+      }
+      return (
+        <>
+          {newEndorsement.map((item, index) => (
+            <Chip
+              size="small"
+              icon={<AddIcon fontSize="inherit" />}
+              label={item}
+              id={`${index}small`}
+              key={`${index}small`}
+              style={{margin:5}}
+            />
+          ))}
+          {count && <Chip
+            size="small"
+            icon={<AddIcon fontSize="inherit" />}
+            label={`${count}more`}
+          />}
+        </>
+      );
+    }
+  };
 
   return (
     <>
+      <Snackbar
+        open={openAlert}
+        autoHideDuration={2000}
+        onClose={handleAlertClose}
+      >
+        <Alert severity="error">Endorsement Already exist!</Alert>
+      </Snackbar>
+
       <Card variant="outlined" className={classes.root}>
         <Typography variant="subtitle1" component="p">
           Popular Endorsements
         </Typography>
+
         <CardActions>
           <IconButton
             color="primary"
@@ -65,46 +173,23 @@ const Endorsement = () => {
             <AddCircleIcon />
           </IconButton>
         </CardActions>
+        <CardContent>{renderCardChips()}</CardContent>
       </Card>
-      <Dialog
+
+      <Modal
         open={open}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle onClose={handleClose}>
-          What would you endorse this tool for ?
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            id="outlined-basic"
-            className={classes.textField}
-            label="Enter text"
-            variant="outlined"
-          />
-          <IconButton
-            color="default"
-            onClick={handleClick}
-            edge="end"
-            style={{ padding: 0 }}
-          >
-            <AddBoxIcon style={{ fontSize: 60, padding: 0 }} />
-          </IconButton>
-          <h3>Popular Endorsements</h3>
-          <Chip
-            size="small"
-            icon={<AddIcon fontSize="inherit" />}
-            label="Informative Charts"
-          />
-        </DialogContent>
-        <DialogActions>
-          <IconButton color="default" onClick={handleClick}>
-            <NavigateBeforeIcon />
-          </IconButton>
-          <IconButton color="default" onClick={handleClick}>
-            <NavigateNextIcon />
-          </IconButton>
-        </DialogActions>
-      </Dialog>
+        suggestions={suggestions}
+        endorsement={endorsement}
+        renderChips={renderChips}
+        addSuggestions={addSuggestions}
+        handleAddEndorsement={handleAddEndorsement}
+        handleValidate={handleValidate}
+        handleClose={handleClose}
+        handleChange={handleChange}
+        value={value}
+        message={message}
+        error={error}
+      />
     </>
   );
 };
