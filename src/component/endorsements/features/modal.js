@@ -18,7 +18,12 @@ import PropTypes from "prop-types";
 
 import { useStyles, styles } from "../style";
 
+import Footer from "./footer";
+
+import constant from "../../../lib/constant";
+
 const Modal = (props) => {
+    const { modalTitle , field} = constant;
     const classes = useStyles();
     const { open,
         handleClose,
@@ -31,7 +36,8 @@ const Modal = (props) => {
         suggestions,
         addSuggestions,
         renderChips,
-        endorsement
+        endorsement,
+        keyPress
     } = props;
 
     const renderSuggestions = () => {
@@ -57,7 +63,7 @@ const Modal = (props) => {
         return (
             <MuiDialogTitle disableTypography className={classes.root} {...other}>
                 <Typography variant="h6">{children}</Typography>
-                {onClose ? (
+                {onClose && (
                     <IconButton
                         aria-label="close"
                         className={classes.closeButton}
@@ -65,7 +71,7 @@ const Modal = (props) => {
                     >
                         <CloseIcon />
                     </IconButton>
-                ) : null}
+                )}
             </MuiDialogTitle>
         );
     });
@@ -78,7 +84,7 @@ const Modal = (props) => {
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle onClose={handleClose}>
-                    What would you endorse this tool for ?
+                    {modalTitle}
                 </DialogTitle>
 
                 <DialogContent>
@@ -89,9 +95,10 @@ const Modal = (props) => {
                         variant="outlined"
                         value={value}
                         onChange={handleChange}
-                        onBlur={() => handleValidate("firstName", value)}
+                        onBlur={() => handleValidate(field, value)}
                         helperText={message}
                         error={error}
+                        onKeyDown={keyPress}
                     />
                     <IconButton
                         color="default"
@@ -115,12 +122,13 @@ const Modal = (props) => {
                 </DialogContent>
 
                 <DialogActions>
-                    <IconButton color="default" >
+                    <Footer />
+                    {/* <IconButton color="default" >
                         <NavigateBeforeIcon />
                     </IconButton>
                     <IconButton color="default" >
                         <NavigateNextIcon />
-                    </IconButton>
+                    </IconButton> */}
                 </DialogActions>
             </Dialog>
         </>
@@ -144,6 +152,6 @@ Modal.propTypes = {
     suggestions: PropTypes.arrayOf(PropTypes.string).isRequired,
     addSuggestions: PropTypes.func.isRequired,
     renderChips: PropTypes.func.isRequired,
-    endorsement: PropTypes.arrayOf(PropTypes.object).isRequired
+    endorsement: PropTypes.arrayOf(PropTypes.string).isRequired
 };
 export default Modal;

@@ -1,10 +1,10 @@
-import { validateValue, handlePromiseError, letters } from "../../../lib/helper";
-import firstNameSchema from "./schema";
+import { validateValue, handlePromiseError } from "../../../lib/helper";
+import FieldSchema from "./schema";
 
 const validate = async (field, value) => {
     let promise = "";
-    if (field === "firstName") {
-        promise = validateValue(firstNameSchema, { firstName: value });
+    if (field === "field") {
+        promise = validateValue(FieldSchema, { endorsementField: value });
     }
     return handlePromiseError(promise);
 }

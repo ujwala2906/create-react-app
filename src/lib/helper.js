@@ -1,7 +1,7 @@
 
 const validateValue = async (schema, value) => schema.validate(value);
 
-const letters = /^[A-Za-z]+$/;
+const letters = /^[a-zA-Z ]*$/;
 
 const handlePromiseError = async promise => {
   let errorMessage = "";
