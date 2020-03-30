@@ -27,8 +27,16 @@ const Endorsement = () => {
   const [openAlert, setOpenAlert] = useState(false);
   const [value, setValue] = useState("");
   const [endorsement, setEndorsement] = useState([]);
+  const [newArray, setNewArray] = useState([]);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
+  const [perPage] = useState(5);
+
+  useEffect(() => {
+    if (endorsement && endorsement.length) {
+      setNewArray(endorsement);
+    }
+  }, [endorsement]);
 
   const handleAlert = () => {
     setOpenAlert(prevState => !prevState);
@@ -49,6 +57,7 @@ const Endorsement = () => {
 
   const handleChange = e => {
     setValue(e.target.value);
+    handleValidate(field, value)
   };
 
   const Alert = props => {
@@ -57,6 +66,7 @@ const Endorsement = () => {
 
   const handleValidate = async (field, value) => {
     let validationError = await validate(field, value);
+
     if (validationError) {
       setError(true);
       setMessage(validationError);
@@ -72,6 +82,7 @@ const Endorsement = () => {
       endorsement.splice(index, 1);
       setEndorsement(preState => [...preState]);
     }
+
     if (value && !error && !message) {
       const checkValue = endorsement.includes(value);
       if (!checkValue) {
@@ -88,7 +99,8 @@ const Endorsement = () => {
     if (!error && !message) {
       if (e.keyCode === 13) {
         const value = endorsement.includes(e.target.value);
-        if (!value) {
+        const value2 = newArray.includes(e.target.value);
+        if (!value || !value2) {
           setEndorsement(preState => [...preState, e.target.value]);
           setValue("");
         } else {
@@ -102,50 +114,49 @@ const Endorsement = () => {
     setValue(item);
   };
 
-  const renderChips = () => {
+  const renderChips = isRender => {
     if (endorsement.length > 0) {
-      const newEndorsement = endorsement.slice(0, 2);
       let count;
       if (endorsement.length > 2) {
         count = parseInt(endorsement.length) - 2;
       }
-      if (count && !open) {
-        return (
-          <>
-            {newEndorsement.map((item, index) => (
-              <Chip
-                size="small"
-                icon={<AddIcon fontSize="inherit" />}
-                label={item}
-                id={`${index}small`}
-                key={`${index}small`}
-                style={{ margin: 5 }}
-              />
-            ))}
-            {count && (
-              <Chip
-                size="small"
-                icon={<AddIcon fontSize="inherit" />}
-                label={`${count}more`}
-                onClick={handleClick}
-              />
-            )}
-          </>
-        );
-      }
       return (
         <>
-          {endorsement.map((item, index) => (
+          {!isRender &&
+            newArray
+              .slice(0, perPage)
+              .map((item, index) => (
+                <Chip
+                  size="small"
+                  icon={<AddIcon fontSize="inherit" />}
+                  label={item}
+                  id={`${index}small`}
+                  key={`${index}small`}
+                  onClick={value => handleEndorsement(item)}
+                  style={{ margin: 5 }}
+                />
+              ))}
+          {isRender &&
+            endorsement
+              .slice(0, 2)
+              .map((item, index) => (
+                <Chip
+                  size="small"
+                  icon={<AddIcon fontSize="inherit" />}
+                  label={item}
+                  id={`${index}small`}
+                  key={`${index}small`}
+                  style={{ margin: 5 }}
+                />
+              ))}
+          {count && isRender && (
             <Chip
               size="small"
               icon={<AddIcon fontSize="inherit" />}
-              label={item}
-              id={`${index}small`}
-              key={`${index}small`}
-              onClick={value => handleEndorsement(item)}
-              style={{ margin: 5 }}
+              label={`${count}more`}
+              onClick={handleClick}
             />
-          ))}
+          )}
         </>
       );
     }
@@ -169,7 +180,7 @@ const Endorsement = () => {
             <AddCircleIcon />
           </IconButton>
         </CardActions>
-        <CardContent>{renderChips()}</CardContent>
+        <CardContent>{renderChips(true)}</CardContent>
       </Card>
 
       <Modal
@@ -186,6 +197,9 @@ const Endorsement = () => {
         message={message}
         error={error}
         keyPress={keyPress}
+        newArray={newArray}
+        setNewArray={setNewArray}
+        perPage={perPage}
       />
     </>
   );

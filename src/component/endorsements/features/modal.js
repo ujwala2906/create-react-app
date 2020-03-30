@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
     Typography,
     IconButton,
@@ -9,8 +9,6 @@ import {
     Link,
 } from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
-import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import CloseIcon from "@material-ui/icons/Close";
 import { withStyles } from "@material-ui/core/styles";
 import MuiDialogTitle from "@material-ui/core/DialogTitle";
@@ -23,7 +21,7 @@ import Footer from "./footer";
 import constant from "../../../lib/constant";
 
 const Modal = (props) => {
-    const { modalTitle , field} = constant;
+    const { modalTitle, field } = constant;
     const classes = useStyles();
     const { open,
         handleClose,
@@ -37,8 +35,11 @@ const Modal = (props) => {
         addSuggestions,
         renderChips,
         endorsement,
-        keyPress
+        keyPress,
+        setNewArray,
+        perPage
     } = props;
+    const [initial, setInitial] = useState(0);
 
     const renderSuggestions = () => {
         return (
@@ -50,7 +51,8 @@ const Modal = (props) => {
                             onClick={value => addSuggestions(item)}
                             color="inherit"
                         >
-                            {`${item}, `}
+                            {`${item},`}
+                            {' '}
                         </Link>
                     </span>
                 ))}
@@ -76,6 +78,19 @@ const Modal = (props) => {
         );
     });
 
+    const handlePrev = (data, index) => {
+        if (data && data.length) {
+            setInitial(index)
+            setNewArray(data);
+        }
+    };
+    const handleNext = (data, index) => {
+        if (data && data.length) {
+            setInitial(index);
+            setNewArray(data);
+        }
+    };
+
     return (
         <>
             <Dialog
@@ -95,7 +110,6 @@ const Modal = (props) => {
                         variant="outlined"
                         value={value}
                         onChange={handleChange}
-                        onBlur={() => handleValidate(field, value)}
                         helperText={message}
                         error={error}
                         onKeyDown={keyPress}
@@ -118,17 +132,17 @@ const Modal = (props) => {
                     )}
 
                     <h3>Popular Endorsements</h3>
-                    {renderChips()}
+                    {renderChips(false)}
                 </DialogContent>
 
                 <DialogActions>
-                    <Footer />
-                    {/* <IconButton color="default" >
-                        <NavigateBeforeIcon />
-                    </IconButton>
-                    <IconButton color="default" >
-                        <NavigateNextIcon />
-                    </IconButton> */}
+                    <Footer
+                        data={endorsement}
+                        initial={initial}
+                        perPage={perPage}
+                        onPrev={handlePrev}
+                        onNext={handleNext}
+                    />
                 </DialogActions>
             </Dialog>
         </>
