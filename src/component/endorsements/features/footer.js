@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { IconButton } from "@material-ui/core";
+import PropTypes from "prop-types";
 
 const Footer = (props) => {
     const { data, perPage, onPrev, onNext, initial } = props;
@@ -60,4 +61,17 @@ const Footer = (props) => {
         </>
     )
 }
+
+Footer.defaultProps = {
+    initial: 0,
+    perPage: 0,
+}
+
+Footer.propTypes = {
+    initial:PropTypes.number,
+    onPrev: PropTypes.func.isRequired,
+    onNext: PropTypes.func.isRequired,
+    perPage: PropTypes.number,
+    data: PropTypes.arrayOf(PropTypes.string).isRequired
+};
 export default Footer;
