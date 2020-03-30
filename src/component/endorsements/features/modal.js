@@ -21,13 +21,12 @@ import Footer from "./footer";
 import constant from "../../../lib/constant";
 
 const Modal = (props) => {
-    const { modalTitle, field } = constant;
+    const { modalTitle } = constant;
     const classes = useStyles();
     const { open,
         handleClose,
         value,
         handleChange,
-        handleValidate,
         message,
         error,
         handleAddEndorsement,
@@ -37,9 +36,10 @@ const Modal = (props) => {
         endorsement,
         keyPress,
         setNewArray,
-        perPage
+        perPage,
+        initial,
+        setInitial
     } = props;
-    const [initial, setInitial] = useState(0);
 
     const renderSuggestions = () => {
         return (
@@ -47,6 +47,7 @@ const Modal = (props) => {
                 {suggestions.map((item, index) => (
                     <span>
                         <Link
+                        style={{cursor: "pointer"}}
                             key={index}
                             onClick={value => addSuggestions(item)}
                             color="inherit"
@@ -153,13 +154,14 @@ Modal.defaultProps = {
     message: '',
     error: false,
     value: '',
+    initial: 0
 }
 
 Modal.propTypes = {
     handleClose: PropTypes.func.isRequired,
     value: PropTypes.string,
     handleChange: PropTypes.func.isRequired,
-    handleValidate: PropTypes.func.isRequired,
+    initial: PropTypes.number,
     message: PropTypes.string,
     error: PropTypes.bool,
     handleAddEndorsement: PropTypes.func.isRequired,

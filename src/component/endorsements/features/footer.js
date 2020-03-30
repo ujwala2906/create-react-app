@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import { IconButton } from "@material-ui/core";
@@ -9,6 +9,18 @@ const Footer = (props) => {
     const [hasPrev, setHasPrev] = useState(true);
     const [hasNext, setHasNext] = useState(false);
     let arrayEnd = data.length - perPage;
+
+    useEffect(() => {
+        if(!initial){
+            setHasPrev(true);
+            setHasNext(false)
+        }
+        if(!data.length || data.length < perPage+1){
+            setHasPrev(true);
+            setHasNext(true)
+        }
+    }, [initial, data, perPage]);
+
     let maxPage =
         (data.length && data.length && parseInt(data.length / perPage, 10)) || 0;
     maxPage =
@@ -21,8 +33,8 @@ const Footer = (props) => {
             perPage * initialValue,
             perPage * initialValue + perPage
         );
-
-        if (initialValue >= maxPage) {
+        setHasPrev(false)
+        if (maxPage - 1 === initialValue) {
             setHasNext(true);
             setHasPrev(false);
         }
@@ -39,6 +51,7 @@ const Footer = (props) => {
             perPage * initialValue,
             perPage * initialValue + perPage
         );
+        setHasNext(false)
         if (sliced && !sliced.length) {
             initialValue = initialValue + 1;
             return onPrev(false, initialValue);
@@ -53,10 +66,10 @@ const Footer = (props) => {
     return (
         <>
             <IconButton color="default" disabled={hasPrev} onClick={handlePrev}>
-                <NavigateBeforeIcon  />
+                <NavigateBeforeIcon />
             </IconButton>
-            <IconButton color="default" disabled={hasNext || !arrayEnd || perPage > data.length} onClick={handleNext}>
-                <NavigateNextIcon  />
+            <IconButton color="default" disabled={hasNext} onClick={handleNext}>
+                <NavigateNextIcon />
             </IconButton>
         </>
     )
@@ -64,11 +77,11 @@ const Footer = (props) => {
 
 Footer.defaultProps = {
     initial: 0,
-    perPage: 0,
+    perPage: 5,
 }
 
 Footer.propTypes = {
-    initial:PropTypes.number,
+    initial: PropTypes.number,
     onPrev: PropTypes.func.isRequired,
     onNext: PropTypes.func.isRequired,
     perPage: PropTypes.number,

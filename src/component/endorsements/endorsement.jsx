@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
   Card,
   Typography,
@@ -31,6 +31,7 @@ const Endorsement = () => {
   const [message, setMessage] = useState("");
   const [error, setError] = useState(false);
   const [perPage] = useState(5);
+  const [initial, setInitial] = useState(0);
 
   useEffect(() => {
     if (endorsement && endorsement.length) {
@@ -57,8 +58,13 @@ const Endorsement = () => {
 
   const handleChange = e => {
     setValue(e.target.value);
-    handleValidate(field, value)
   };
+
+  useEffect(() => {
+    handleValidate(field, value);
+  }, [value]);
+
+ 
 
   const Alert = props => {
     return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -66,7 +72,6 @@ const Endorsement = () => {
 
   const handleValidate = async (field, value) => {
     let validationError = await validate(field, value);
-
     if (validationError) {
       setError(true);
       setMessage(validationError);
@@ -77,34 +82,40 @@ const Endorsement = () => {
   };
 
   const handleEndorsement = item => {
+    setInitial(0);
     const index = endorsement.indexOf(item);
     if (index >= 0) {
       endorsement.splice(index, 1);
       setEndorsement(preState => [...preState]);
     }
-
     if (value && !error && !message) {
       const checkValue = endorsement.includes(value);
-      if (!checkValue) {
-        setEndorsement(preState => [...preState, value]);
-        setValue("");
-      } else {
-        handleAlert();
+      const val = value.trim();
+      if (val !== "") {
+        if (!checkValue) {
+          setEndorsement(preState => [...preState, value]);
+          setValue("");
+        } else {
+          handleAlert();
+        }
       }
     }
   };
 
   const keyPress = e => {
-    handleValidate(field, e.target.value);
+    setInitial(0);
     if (!error && !message) {
       if (e.keyCode === 13) {
         const value = endorsement.includes(e.target.value);
         const value2 = newArray.includes(e.target.value);
-        if (!value || !value2) {
-          setEndorsement(preState => [...preState, e.target.value]);
-          setValue("");
-        } else {
-          handleAlert();
+        const val = e.target.value.trim();
+        if (val !== "") {
+          if (!value || !value2) {
+            setEndorsement(preState => [...preState, e.target.value]);
+            setValue("");
+          } else {
+            handleAlert();
+          }
         }
       }
     }
@@ -147,6 +158,7 @@ const Endorsement = () => {
                   id={`${index}small`}
                   key={`${index}small`}
                   style={{ margin: 5 }}
+                  onClick={value => handleEndorsement(item)}
                 />
               ))}
           {count && isRender && (
@@ -200,6 +212,8 @@ const Endorsement = () => {
         newArray={newArray}
         setNewArray={setNewArray}
         perPage={perPage}
+        initial={initial}
+        setInitial={setInitial}
       />
     </>
   );
