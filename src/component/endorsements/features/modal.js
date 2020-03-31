@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import {
     Typography,
     IconButton,
@@ -35,10 +35,10 @@ const Modal = (props) => {
         renderChips,
         endorsement,
         keyPress,
-        setNewArray,
         perPage,
         initial,
-        setInitial
+        handlePrev,
+        handleNext
     } = props;
 
     const renderSuggestions = () => {
@@ -78,19 +78,6 @@ const Modal = (props) => {
             </MuiDialogTitle>
         );
     });
-
-    const handlePrev = (data, index) => {
-        if (data && data.length) {
-            setInitial(index)
-            setNewArray(data);
-        }
-    };
-    const handleNext = (data, index) => {
-        if (data && data.length) {
-            setInitial(index);
-            setNewArray(data);
-        }
-    };
 
     return (
         <>
@@ -158,6 +145,8 @@ Modal.defaultProps = {
 }
 
 Modal.propTypes = {
+    handlePrev:PropTypes.func.isRequired,
+    handleNext:PropTypes.func.isRequired,
     handleClose: PropTypes.func.isRequired,
     value: PropTypes.string,
     handleChange: PropTypes.func.isRequired,

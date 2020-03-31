@@ -8,7 +8,6 @@ const Footer = (props) => {
     const { data, perPage, onPrev, onNext, initial } = props;
     const [hasPrev, setHasPrev] = useState(true);
     const [hasNext, setHasNext] = useState(false);
-    let arrayEnd = data.length - perPage;
 
     useEffect(() => {
         if(!initial){
