@@ -1,13 +1,14 @@
 import React from 'react';
 import "./App.css";
 
-import SideBar from "./component/sideBar";
+import { SideBar, Endorsement } from "./component";
 
 const App = () => {
   return (
     <div className="App">
       <header className="App-header">
-        <SideBar />
+        {/* <SideBar /> */}
+        <Endorsement />
       </header>
     </div>
   );
