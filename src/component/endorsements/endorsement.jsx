@@ -16,7 +16,7 @@ import validate from "./yup";
 
 import { Modal } from "./features";
 
-import constant from "../../lib/constant";
+import { constant } from "../../lib/constant";
 
 const Alert = props => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
@@ -47,26 +47,11 @@ class Endorsement extends React.Component {
     };
   }
 
-  handleClick = () => {
-    this.setState({ open: !this.state.open });
-  };
+  handleClick = () => this.setState({ open: !this.state.open });
 
-  suggestions = [
-    "Easy to use",
-    "Requires training",
-    "Informative charts",
-    "Detailed Reports",
-    "Easy reading",
-    "Good for trends"
-  ];
+  addSuggestions = item => this.setState({ value: item });
 
-  addSuggestions = item => {
-    this.setState({ value: item });
-  };
-
-  handleAlert = () => {
-    this.setState({ openAlert: !this.state.openAlert });
-  };
+  handleAlert = () => this.setState({ openAlert: !this.state.openAlert });
 
   handleChange = e => {
     this.setState({ value: e.target.value }, () => {
@@ -92,7 +77,15 @@ class Endorsement extends React.Component {
   };
 
   handleEndorsement = item => {
-    const {endorsement,newArray, initial, perPage , value, error, message} = this.state;
+    const {
+      endorsement,
+      newArray,
+      initial,
+      perPage,
+      value,
+      error,
+      message
+    } = this.state;
     const index = endorsement.indexOf(item);
     const newArrayIndex = newArray.indexOf(item);
     if (index >= 0) {
@@ -174,13 +167,7 @@ class Endorsement extends React.Component {
     }
   };
 
-  handlePrev = (data, index) => {
-    if (data && data.length) {
-      this.setState({ initial: index });
-      this.setState({ newArray: data });
-    }
-  };
-  handleNext = (data, index) => {
+  handlePagination = (data, index) => {
     if (data && data.length) {
       this.setState({ initial: index });
       this.setState({ newArray: data });
@@ -198,44 +185,39 @@ class Endorsement extends React.Component {
       return (
         <>
           {!isRender &&
-            newArray
-              .slice(0, perPage)
-              .map((item, index) => (
-                <Chip
-                  size="small"
-                  icon={<AddIcon fontSize="inherit" />}
-                  label={item}
-                  id={`${index}small`}
-                  key={`${index}small`}
-                  onClick={() => this.handleEndorsement(item)}
-                  style={{ margin: 5 }}
-                />
-              ))}
+            newArray.slice(0, perPage).map((item, index) =>
+              this.chipRender(item, () => this.handleEndorsement(item), {
+                id: `${index}small`,
+                key: `${index}small`,
+                style: { margin: 5 }
+              })
+            )}
           {isRender &&
-            endorsement
-              .slice(0, 2)
-              .map((item, index) => (
-                <Chip
-                  size="small"
-                  icon={<AddIcon fontSize="inherit" />}
-                  label={item}
-                  id={`${index}small`}
-                  key={`${index}small`}
-                  style={{ margin: 5 }}
-                  onClick={() => this.handleEndorsement(item)}
-                />
-              ))}
-          {count && isRender && (
-            <Chip
-              size="small"
-              icon={<AddIcon fontSize="inherit" />}
-              label={`${count}more`}
-              onClick={this.handleClick}
-            />
-          )}
+            endorsement.slice(0, 2).map((item, index) =>
+              this.chipRender(item, () => this.handleEndorsement(item), {
+                id: `${index}small`,
+                key: `${index}small`,
+                style: { margin: 5 }
+              })
+            )}
+          {count &&
+            isRender &&
+            this.chipRender(`${count}more`, this.handleClick)}
         </>
       );
     }
+  };
+
+  chipRender = (label, onClick, rest) => {
+    return (
+      <Chip
+        size="small"
+        icon={<AddIcon fontSize="inherit" />}
+        label={label}
+        onClick={onClick}
+        {...rest}
+      />
+    );
   };
 
   render() {
@@ -276,7 +258,6 @@ class Endorsement extends React.Component {
 
         <Modal
           open={open}
-          suggestions={this.suggestions}
           endorsement={endorsement}
           renderChips={this.renderChips}
           addSuggestions={this.addSuggestions}
@@ -291,8 +272,8 @@ class Endorsement extends React.Component {
           newArray={newArray}
           perPage={perPage}
           initial={initial}
-          handlePrev={this.handlePrev}
-          handleNext={this.handleNext}
+          handlePrev={this.handlePagination}
+          handleNext={this.handlePagination}
         />
       </>
     );

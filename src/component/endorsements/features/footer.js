@@ -10,11 +10,11 @@ const Footer = (props) => {
     const [hasNext, setHasNext] = useState(false);
 
     useEffect(() => {
-        if(!initial){
+        if (!initial) {
             setHasPrev(true);
             setHasNext(false);
         }
-        if(!data.length || data.length < perPage+1){
+        if (!data.length || data.length < perPage + 1) {
             setHasPrev(true);
             setHasNext(true)
         }
