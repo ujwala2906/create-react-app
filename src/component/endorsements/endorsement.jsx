@@ -92,23 +92,49 @@ class Endorsement extends React.Component {
   };
 
   handleEndorsement = item => {
-    this.setState({ initial: 0 });
-    const index = this.state.endorsement.indexOf(item);
+    const {endorsement,newArray, initial, perPage , value, error, message} = this.state;
+    const index = endorsement.indexOf(item);
+    const newArrayIndex = newArray.indexOf(item);
     if (index >= 0) {
-      this.state.endorsement.splice(index, 1);
-      this.setState({
-        endorsement: [...this.state.endorsement],
-        newArray: [...this.state.endorsement]
-      });
+      endorsement.splice(index, 1);
+      newArray.splice(newArrayIndex, 1);
+
+      if (newArray.length === 0) {
+        let initialValue = initial;
+        this.setState({ initial: --initialValue });
+        let parent = endorsement;
+        let child = parent;
+
+        let parentLength = parent.length;
+
+        if (parent.length >= perPage && initial !== 1) {
+          child = parent.slice(parentLength - perPage, parentLength);
+        }
+
+        return this.setState({
+          endorsement: [...endorsement],
+          newArray: [...child]
+        });
+      }
+      return this.setState(
+        {
+          endorsement: [...endorsement]
+        },
+        () => {
+          this.setState({ newArray: [...newArray] });
+        }
+      );
     }
-    if (this.state.value && !this.state.error && !this.state.message) {
-      const checkValue = this.state.endorsement.includes(this.state.value);
-      const val = this.state.value.trim();
+
+    if (value && !error && !message) {
+      this.setState({ initial: 0 });
+      const checkValue = endorsement.includes(value);
+      const val = value.trim();
       if (val !== "") {
         if (!checkValue) {
           this.setState(
             {
-              endorsement: [...this.state.endorsement, this.state.value]
+              endorsement: [...endorsement, value]
             },
             () => {
               this.setState({ newArray: [...this.state.endorsement] });
@@ -168,6 +194,7 @@ class Endorsement extends React.Component {
       if (endorsement.length > 2) {
         count = parseInt(endorsement.length) - 2;
       }
+
       return (
         <>
           {!isRender &&
@@ -180,7 +207,7 @@ class Endorsement extends React.Component {
                   label={item}
                   id={`${index}small`}
                   key={`${index}small`}
-                  onClick={value => this.handleEndorsement(item)}
+                  onClick={() => this.handleEndorsement(item)}
                   style={{ margin: 5 }}
                 />
               ))}
@@ -195,7 +222,7 @@ class Endorsement extends React.Component {
                   id={`${index}small`}
                   key={`${index}small`}
                   style={{ margin: 5 }}
-                  onClick={value => this.handleEndorsement(item)}
+                  onClick={() => this.handleEndorsement(item)}
                 />
               ))}
           {count && isRender && (

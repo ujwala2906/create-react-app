@@ -21,7 +21,7 @@ import Footer from "./footer";
 import constant from "../../../lib/constant";
 
 const Modal = (props) => {
-    const { modalTitle } = constant;
+    const { modalTitle, suggestions: suggestion} = constant;
     const classes = useStyles();
     const { open,
         handleClose,
@@ -49,7 +49,7 @@ const Modal = (props) => {
                         <Link
                         style={{cursor: "pointer"}}
                             key={index}
-                            onClick={value => addSuggestions(item)}
+                            onClick={() => addSuggestions(item)}
                             color="inherit"
                         >
                             {`${item},`}
@@ -114,7 +114,7 @@ const Modal = (props) => {
                     {endorsement.length < 3 && (
                         <Typography variant="subtitle2" color="textSecondary">
                             <br />
-                            <strong>Suggestions:</strong>
+                            <strong>{`${suggestion} : `}</strong>
                             {renderSuggestions()}
                         </Typography>
                     )}
