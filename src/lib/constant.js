@@ -14,5 +14,4 @@ const suggestions = [
     "Easy reading",
     "Good for trends"
 ];
-
 export { constant, suggestions };
