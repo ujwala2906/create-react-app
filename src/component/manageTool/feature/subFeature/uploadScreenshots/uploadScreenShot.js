@@ -45,7 +45,7 @@ const UploadScreenShot = (props) => {
                 </Button>
             </Grid>
             <Grid item xs={10}>
-                {renderTextField(placeholder.enterYourText)}
+                {renderTextField(placeholder.enterYourText, "screenshot")}
             </Grid>
         </>
     )

@@ -1,9 +1,23 @@
 const manageToolCms = {
     addNewTool: "Add New Tool"
-};
-const subscriptionCms = {
+}
 
-};
+const subscriptionCms = {
+    stages: "STEP 2 OF 2",
+    toolHead: "Tell us about the Subscription",
+    markets: "Does this subscription cover access for multiple markets",
+    notes: "Additional Notes/Comments",
+    accessType: "Please select access type",
+    selectCountries: "Apply the same access across all selected countries ?",
+    accessTypeArray: [
+        "Limited Log-Ins Available",
+        "Contact Required For Setup",
+        "Enterprise Access/ Registration With Dentsu Email",
+        "Whitelist",
+        "Only Website Link Required, No Log-In Necessary​"
+    ]
+}
+
 const toolCms = {
     stages: "STEP 1 OF 2",
     aboutTool: "Tell us about the Tool",
@@ -94,7 +108,7 @@ const country = [
     { title: 'Gambia' },
     { title: 'Georgia' },
     { title: 'Germany' },
-    { title: 'Ghana' }, 
+    { title: 'Ghana' },
     { title: 'Greece' },
     { title: 'Grenada' },
     { title: 'Guatemala ' },

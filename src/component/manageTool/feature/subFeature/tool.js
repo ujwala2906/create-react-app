@@ -40,14 +40,22 @@ const Tool = () => {
     } = toolCms;
 
     const { searchTool, enterYourText } = placeholder;
+
     const [value, setValue] = useState("selectRegion");
     const [addQuestions, setAddQuestions] = useState([]);
+
+    const [error, setError] = useState({ insightErr: { message: "", isTrue: false }, typeErr: { message: "", isTrue: false } })
+
+    const [isInsight, setIsInsight] = useState([]);
+    const [isType, setIsType] = useState([]);
     const [errorMessage, setErrorMessage] = useState({
         title: "",
         description: "",
-        url: ""
+        url: "",
+        logo: "",
+        email: "",
+        screenshot: ""
     });
-
 
     const [formValue, setFormValue] = useState({
         title: "",
@@ -88,11 +96,53 @@ const Tool = () => {
         );
     };
 
-    const renderCheckBox = label => {
+    useEffect(() => {
+        if (!isInsight.length && error.insightErr && error.insightErr.isTrue) {
+            return setError(prevState => ({ ...prevState, insightErr: { message: "Select at least one Insight Type", isTrue: false } }));
+        }
+        if (!isType.length && error.typeErr && error.typeErr.isTrue) {
+            return setError(prevState => ({ ...prevState, typeErr: { message: "Select at least one Data Type", isTrue: false } }));
+        }
+    }, [isInsight, isType, error]);
+
+
+    const handleCheck = (event) => {
+        const ids = event.target.id;
+        const fieldSelected = event.target.name;
+        const isChecked = event.target.checked;
+
+        const index = ids === "insightData" ? isInsight.indexOf(fieldSelected) : isType.indexOf(fieldSelected);
+        const data = ids === "insightData" ? isInsight : isType;
+
+        if (data.includes(fieldSelected) && !isChecked) {
+            if (index !== -1) {
+                data.splice(index, 1);
+                if (ids === "insightData") {
+                    setError(prevState => ({ ...prevState, insightErr: { message: "", isTrue: true } }));
+                    return setIsInsight(preState => [...data]);
+                }
+                setError(prevState => ({ ...prevState, typeErr: { message: "", isTrue: true } }));
+                return setIsType(preState => [...data])
+            }
+            return false;
+        };
+        if (ids === "insightData") {
+            setError(prevState => ({ ...prevState, insightErr: { message: "", isTrue: true } }));
+            return setIsInsight(prevState => [...prevState, fieldSelected])
+        };
+        setError(prevState => ({ ...prevState, typeErr: { message: "", isTrue: true } }));
+        return setIsType(prevState => [...prevState, fieldSelected])
+        // const result = ids === "insightData" ? setIsInsight(prevState => [...prevState, fieldSelected]) : setIsType(prevState => [...prevState, fieldSelected]);;
+        // return result;
+    }
+
+    const renderCheckBox = (label, filedName) => {
         return (
             <>
                 {label.map((item, index) => (
-                    <FormControlLabel control={<Checkbox />} label={item} key={index} />
+                    <>
+                        <FormControlLabel control={<Checkbox onChange={handleCheck} name={item} id={filedName} />} label={item} key={`${index}hut`} />
+                    </>
                 ))}
             </>
         )
@@ -100,17 +150,17 @@ const Tool = () => {
 
     const handlePush = () => {
         setAddQuestions(preState => [...preState, formValue.questionField]);
+        setFormValue({ questionField: "" })
     };
 
     const handleDelete = (index) => {
         addQuestions.splice(index, 1);
         setAddQuestions(preState => [...preState]);
-    }
+    };
 
     const handleValue = (event) => {
         setValue(event.target.value)
-        console.log(value);
-    }
+    };
 
     const renderQuestions = () => {
         return (
@@ -120,9 +170,13 @@ const Tool = () => {
                 ))}
             </>
         )
-    }
+    };
 
     const renderTextField = (placeHolder, name, onClick, num, disable, rest) => {
+        let error = false
+        if (errorMessage && errorMessage[name]) {
+            error = true;
+        }
         return (
             <TextField
                 name={name}
@@ -133,7 +187,7 @@ const Tool = () => {
                 value={formValue[name]}
                 onChange={onClick}
                 helperText={errorMessage && errorMessage[name]}
-                error={errorMessage && errorMessage[name]}
+                error={error}
                 multiline
                 rows={num}
                 disabled={disable}
@@ -151,7 +205,7 @@ const Tool = () => {
             {renderTextField(searchTool, "title", handleChange)}
 
             <Grid container spacing={3}>
-                <UploadLogo renderTextField={renderTextField} />
+                <UploadLogo />
 
                 <Grid item xs={12}>
                     {renderTypography(websiteUrl, "subtitle1", "textSecondary")}
@@ -186,8 +240,9 @@ const Tool = () => {
                         "textSecondary"
                     )}
                     <FormGroup row>
-                        {renderCheckBox(insightArray)}
+                        {renderCheckBox(insightArray, "insightData")}
                     </FormGroup>
+                    {<span style={{ color: "red", fontSize: 15 }}>{error.insightErr && error.insightErr.message}</span>}
                 </Grid>
 
                 <Grid item xs={12}>
@@ -197,8 +252,9 @@ const Tool = () => {
                         "textSecondary"
                     )}
                     <FormGroup row>
-                        {renderCheckBox(typeArray)}
+                        {renderCheckBox(typeArray, "typeData")}
                     </FormGroup>
+                    {<span style={{ color: "red", fontSize: 15 }}>{error.typeErr && error.typeErr.message}</span>}
                 </Grid>
 
                 <UploadScreenShot renderTypography={renderTypography} renderTextField={renderTextField} />
@@ -227,16 +283,17 @@ const Tool = () => {
                         </RadioGroup>
                     </FormControl>
 
-                    {value === "selectRegion" && <Autocomplete />}
+                    {value === "selectRegion" && <Autocomplete multiple={true} clear={false} />}
 
                 </Grid>
 
                 <Grid item xs={12}>
                     {renderTypography(emailContact, "subtitle1", "textSecondary")}
-                    {renderTextField(enterYourText)}
+                    {renderTextField(enterYourText, "email", handleChange)}
                 </Grid>
 
             </Grid>
+            <br />
             <Divider />
         </>
     )

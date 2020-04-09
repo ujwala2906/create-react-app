@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Grid, Box, Button, IconButton, Avatar } from "@material-ui/core";
+import { Grid, Box, Button, IconButton, Avatar, TextField } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -41,7 +41,7 @@ const UploadLogo = (props) => {
         },
     }));
 
-    const ok =()=>{
+    const ok = () => {
         alert("ok")
     }
 
@@ -80,9 +80,14 @@ const UploadLogo = (props) => {
                 </Button>
             </Grid>
             <Grid item xs={8}>
-                {renderTextField(placeholder.noFileChosen, name, onClick, error, message, {
-                    style: { marginTop: 35 }
-                })}
+                <TextField
+                    fullWidth
+                    margin="dense"
+                    variant="outlined"
+                    placeholder={placeholder.noFileChosen}
+                    value={name}
+                    style={{ marginTop: 35 }}
+                />
             </Grid>
         </>
     )
