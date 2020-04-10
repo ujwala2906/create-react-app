@@ -23,6 +23,8 @@ import UploadLogo from "./uploadLogo";
 import UploadScreenShot from "./uploadScreenshots";
 import Autocomplete from "./autocomplete"
 
+import {constant} from "../../../../lib/constant";
+
 const Tool = () => {
     const {
         stages,
@@ -36,12 +38,18 @@ const Tool = () => {
         emailContact,
         insightArray,
         typeArray,
-        questions
+        questions,
+        insightType,
+        dataType,
+        globalRegion,
+        countries
     } = toolCms;
+
+    const { selectRegion , insightData, typeData, global} = constant;
 
     const { searchTool, enterYourText } = placeholder;
 
-    const [value, setValue] = useState("selectRegion");
+    const [value, setValue] = useState(selectRegion);
     const [addQuestions, setAddQuestions] = useState([]);
 
     const [error, setError] = useState({ insightErr: { message: "", isTrue: false }, typeErr: { message: "", isTrue: false } })
@@ -54,7 +62,7 @@ const Tool = () => {
         url: "",
         logo: "",
         email: "",
-        screenshot: ""
+        questionField:""
     });
 
     const [formValue, setFormValue] = useState({
@@ -98,10 +106,10 @@ const Tool = () => {
 
     useEffect(() => {
         if (!isInsight.length && error.insightErr && error.insightErr.isTrue) {
-            return setError(prevState => ({ ...prevState, insightErr: { message: "Select at least one Insight Type", isTrue: false } }));
+            return setError(prevState => ({ ...prevState, insightErr: { message: insightType, isTrue: false } }));
         }
         if (!isType.length && error.typeErr && error.typeErr.isTrue) {
-            return setError(prevState => ({ ...prevState, typeErr: { message: "Select at least one Data Type", isTrue: false } }));
+            return setError(prevState => ({ ...prevState, typeErr: { message: dataType, isTrue: false } }));
         }
     }, [isInsight, isType, error]);
 
@@ -111,13 +119,13 @@ const Tool = () => {
         const fieldSelected = event.target.name;
         const isChecked = event.target.checked;
 
-        const index = ids === "insightData" ? isInsight.indexOf(fieldSelected) : isType.indexOf(fieldSelected);
-        const data = ids === "insightData" ? isInsight : isType;
+        const index = ids === insightData ? isInsight.indexOf(fieldSelected) : isType.indexOf(fieldSelected);
+        const data = ids === insightData ? isInsight : isType;
 
         if (data.includes(fieldSelected) && !isChecked) {
             if (index !== -1) {
                 data.splice(index, 1);
-                if (ids === "insightData") {
+                if (ids === insightData) {
                     setError(prevState => ({ ...prevState, insightErr: { message: "", isTrue: true } }));
                     return setIsInsight(preState => [...data]);
                 }
@@ -126,15 +134,13 @@ const Tool = () => {
             }
             return false;
         };
-        if (ids === "insightData") {
+        if (ids === insightData) {
             setError(prevState => ({ ...prevState, insightErr: { message: "", isTrue: true } }));
             return setIsInsight(prevState => [...prevState, fieldSelected])
         };
         setError(prevState => ({ ...prevState, typeErr: { message: "", isTrue: true } }));
         return setIsType(prevState => [...prevState, fieldSelected])
-        // const result = ids === "insightData" ? setIsInsight(prevState => [...prevState, fieldSelected]) : setIsType(prevState => [...prevState, fieldSelected]);;
-        // return result;
-    }
+    };
 
     const renderCheckBox = (label, filedName) => {
         return (
@@ -172,7 +178,7 @@ const Tool = () => {
         )
     };
 
-    const renderTextField = (placeHolder, name, onClick, num, disable, rest) => {
+    const renderTextField = (placeHolder, name, onClick, num, disable) => {
         let error = false
         if (errorMessage && errorMessage[name]) {
             error = true;
@@ -191,7 +197,6 @@ const Tool = () => {
                 multiline
                 rows={num}
                 disabled={disable}
-                {...rest}
             />
         );
     }
@@ -240,7 +245,7 @@ const Tool = () => {
                         "textSecondary"
                     )}
                     <FormGroup row>
-                        {renderCheckBox(insightArray, "insightData")}
+                        {renderCheckBox(insightArray, insightData)}
                     </FormGroup>
                     {<span style={{ color: "red", fontSize: 15 }}>{error.insightErr && error.insightErr.message}</span>}
                 </Grid>
@@ -252,7 +257,7 @@ const Tool = () => {
                         "textSecondary"
                     )}
                     <FormGroup row>
-                        {renderCheckBox(typeArray, "typeData")}
+                        {renderCheckBox(typeArray, typeData)}
                     </FormGroup>
                     {<span style={{ color: "red", fontSize: 15 }}>{error.typeErr && error.typeErr.message}</span>}
                 </Grid>
@@ -271,19 +276,19 @@ const Tool = () => {
                             onChange={handleValue}
                         >
                             <FormControlLabel
-                                value="global"
+                                value={global}
                                 control={<Radio />}
-                                label="Global"
+                                label={globalRegion}
                             />
                             <FormControlLabel
-                                value="selectRegion"
+                                value={selectRegion}
                                 control={<Radio />}
-                                label="Select Countries"
+                                label={countries}
                             />
                         </RadioGroup>
                     </FormControl>
 
-                    {value === "selectRegion" && <Autocomplete multiple={true} clear={false} />}
+                    {value === selectRegion && <Autocomplete multiple={true} clear={false} />}
 
                 </Grid>
 

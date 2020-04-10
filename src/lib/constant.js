@@ -3,7 +3,13 @@ const constant = {
     snackBar: "Endorsement Already exist!",
     cardTitle: "Popular Endorsements",
     field: "field",
-    suggestions: "Suggestions"
+    suggestions: "Suggestions",
+    selectRegion: "selectRegion",
+    insightData: "insightData",
+    typeData:"typeData",
+    global:"global",
+    NO:"no",
+    YES:"yes"
 }
 
 const suggestions = [

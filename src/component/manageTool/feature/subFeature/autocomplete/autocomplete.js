@@ -6,20 +6,9 @@ import validate from "../../yup";
 
 import { country } from "../../../cms";
 
-const Autocomplete = (prop) => {
+const Autocomplete = (props) => {
 
-    const { multiple, clear }= prop;
-    const [state, setState] = useState();
-
-    const handleChange = async (e, value) => {
-        if(!clear && value && !value.length){
-            const ValidateError = await validate("country", null);
-            setState(ValidateError);
-        }
-        else{
-            setState(false);
-        }
-    }
+    const { multiple=true, clear=false, handleChange=()=>{}, state="" }= props;
 
     return (
         <>
@@ -29,7 +18,7 @@ const Autocomplete = (prop) => {
                 options={country}
                 getOptionLabel={(option) => option.title}
                 filterSelectedOptions
-                disableClearable={clear}
+                disableClearable={clear} 
                 onChange={handleChange}
                 renderInput={(params) => (
                     <TextField

@@ -3,7 +3,6 @@ import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
 import {
   IconButton,
-  Typography,
   Container,
   CardActions
 } from "@material-ui/core";

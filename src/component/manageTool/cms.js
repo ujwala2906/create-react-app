@@ -9,13 +9,19 @@ const subscriptionCms = {
     notes: "Additional Notes/Comments",
     accessType: "Please select access type",
     selectCountries: "Apply the same access across all selected countries ?",
+    seats:"Number of seats:",
+    limit:"If limited, please nominate a super user who currently has access :",
+    email:"If applicable, Please enter email contact",
+    instructions: `If applicable, please provide general instructions regarding the contact information, (i.e. "Your iProspect Lead" or "Your Google account rep" etc.).`,
+    whiteList:"If whitelist, please nominate a super user who currently has access :",
     accessTypeArray: [
-        "Limited Log-Ins Available",
-        "Contact Required For Setup",
-        "Enterprise Access/ Registration With Dentsu Email",
-        "Whitelist",
-        "Only Website Link Required, No Log-In Necessary​"
-    ]
+        { title: "Limited Log-Ins Available", key: "limit" },
+        { title: "Contact Required For Setup", key: "contact" },
+        { title: "Enterprise Access/ Registration With Dentsu Email", key: "access" },
+        { title: "Whitelist", key: "whitelist" },
+        { title: "Only Website Link Required, No Log-In Necessary", key: "website" }
+    ],
+    customize:"No(Please Customize Access In The Grid Below)"
 }
 
 const toolCms = {
@@ -34,6 +40,10 @@ const toolCms = {
     limit: "Please identify if the tool's data set is global or limited to specific countries?",
     emailContact: "Please provide email contact information for the tool. This will likely be the agency's account representative",
     questions: "Please add 1-2 examples of question this tool could answer.",
+    insightType: "Select at least one Insight Type",
+    dataType: "Select at least one Data Type",
+    countries:"Select Countries",
+    globalRegion:"Global",
     insightArray: [
         "Audience",
         "Culture & Trends",
@@ -112,6 +122,9 @@ const country = [
     { title: 'Greece' },
     { title: 'Grenada' },
     { title: 'Guatemala ' },
+    { title: 'Iceland' },
+    { title: 'India' },
+    { title: 'Iraq' }
 
 ];
 export { manageToolCms, subscriptionCms, toolCms, placeholder, country }

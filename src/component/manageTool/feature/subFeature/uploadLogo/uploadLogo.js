@@ -1,59 +1,45 @@
 import React, { useState } from "react";
-import { Grid, Box, Button, IconButton, Avatar, TextField } from "@material-ui/core";
-import CloseIcon from '@material-ui/icons/Close';
-import { makeStyles } from '@material-ui/core/styles';
+import { Grid, Button, IconButton, Avatar, TextField } from "@material-ui/core";
 
 import { toolCms, placeholder } from "../../../cms";
 
-const UploadLogo = (props) => {
+import useStyles from "../style";
 
-    const { renderTextField, onClick, error, message, } = props;
+const UploadLogo = () => {
 
     const [name, setName] = useState();
     const [img, setImg] = useState();
+    const [showError, setShowError] = useState("");
 
     const handleChange = (event) => {
         const fileData = event.target.files;
         var reader = new FileReader();
+        const { type, size } = fileData[0]
+        if (size > 2097152) {
+            return setShowError("Maximum upload file size : 2MB");
+        }
+        if (!type.match(/image[/](?:jpg|jpeg|png|gif)/)) {
+            return setShowError("Invalid File Type");
+        }
         reader.readAsDataURL(fileData[0]);
         reader.onloadend = function (e) {
             setImg(reader.result);
         }
-
         const fileName = fileData[0].name;
         setName(fileName);
     };
 
-    const useStyles = makeStyles((theme) => ({
-        root: {
-            display: 'flex',
-            '& > *': {
-                margin: theme.spacing(1),
-            },
-        },
-        small: {
-            width: theme.spacing(3),
-            height: theme.spacing(3),
-        },
-        large: {
-            width: theme.spacing(15),
-            height: theme.spacing(15),
-        },
-    }));
-
-    const ok = () => {
-        alert("ok")
+    const removeImage = () => {
+        setImg(false);
+        setName("");
     }
 
     const renderImage = () => {
         return (
             <>
-
-                <Avatar sizes="" alt="Remy Sharp" src={img} className={classes.large} variant="square">
-                    <IconButton aria-label="delete" onClick={ok}>
-                        <CloseIcon />
-                    </IconButton>
-                </Avatar>
+                <IconButton aria-label="delete" onClick={removeImage}>
+                    <Avatar src={img} className={classes.large} variant="square" />
+                </IconButton>
             </>
         )
     };
@@ -75,6 +61,7 @@ const UploadLogo = (props) => {
                     <input
                         type="file"
                         style={{ display: "none" }}
+                        accept="image/png, image/jpeg, image/jpg, image/gif"
                         onChange={handleChange}
                     />
                 </Button>
@@ -89,6 +76,7 @@ const UploadLogo = (props) => {
                     style={{ marginTop: 35 }}
                 />
             </Grid>
+            {<span style={{ color: "red", fontSize: 15 }}>{showError}</span>}
         </>
     )
 }
