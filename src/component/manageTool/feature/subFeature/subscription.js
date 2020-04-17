@@ -36,10 +36,7 @@ const {
 class Subscription extends Component {
     constructor(props) {
         super(props);
-        console.log("props", props);
         this.state = {
-            // value: "yes",
-            countryValue: "yes",
             multiple: true,
             clear: false,
             showField: "",

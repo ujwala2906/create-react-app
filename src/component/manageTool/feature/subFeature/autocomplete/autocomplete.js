@@ -19,7 +19,6 @@ const Autocomplete = (props) => {
         if (subscription) {
             updateState({ subscription: { ...props, autocompleteName: value } })
         }
-        console.log(autocompleteName)
         if (!clear && value && !value.length) {
             const ValidateError = await validate("country", "");
             setState(ValidateError);
