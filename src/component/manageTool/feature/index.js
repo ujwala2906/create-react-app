@@ -1,3 +1,3 @@
-import AddTool from "./addTool";
+import Tools from "./tools";
 
-export default AddTool;
+export default Tools;

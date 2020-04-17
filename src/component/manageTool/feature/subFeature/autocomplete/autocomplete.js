@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, { useState } from "react";
 import { Autocomplete as MaterialAutocomplete } from '@material-ui/lab';
 import TextField from '@material-ui/core/TextField';
 
@@ -8,7 +8,25 @@ import { country } from "../../../cms";
 
 const Autocomplete = (props) => {
 
-    const { multiple=true, clear=false, handleChange=()=>{}, state="" }= props;
+    const { multiple = true, clear = false, updateState, autocompleteName, tools , subscription} = props;
+
+    const [state, setState] = useState();
+
+    const handleChange = async (e, value) => {
+        if (tools) {
+            updateState({ tools: { ...props, autocompleteName: value } })
+        }
+        if (subscription) {
+            updateState({ subscription: { ...props, autocompleteName: value } })
+        }
+        console.log(autocompleteName)
+        if (!clear && value && !value.length) {
+            const ValidateError = await validate("country", "");
+            setState(ValidateError);
+        } else {
+            setState(false);
+        }
+    };
 
     return (
         <>
@@ -18,8 +36,9 @@ const Autocomplete = (props) => {
                 options={country}
                 getOptionLabel={(option) => option.title}
                 filterSelectedOptions
-                disableClearable={clear} 
+                disableClearable={clear}
                 onChange={handleChange}
+                defaultValue={autocompleteName}
                 renderInput={(params) => (
                     <TextField
                         {...params}
@@ -34,7 +53,14 @@ const Autocomplete = (props) => {
             />
         </>
     )
+};
+
+Autocomplete.default = {
+    multiple: true,
+    clear: false,
+    autocompleteName: [],
+    updateState: () => { },
+};
 
 
-}
 export default Autocomplete;

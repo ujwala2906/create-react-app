@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Component } from "react";
 import {
     TextField,
     Typography,
@@ -8,7 +8,7 @@ import {
     Radio,
     RadioGroup,
     Divider,
-    Checkbox
+    Checkbox,
 } from "@material-ui/core";
 
 import { subscriptionCms, placeholder } from "../../cms";
@@ -17,95 +17,94 @@ import Autocomplete from "./autocomplete";
 
 import validate from "../yup";
 
-import {constant} from "../../../../lib/constant";
+import { constant } from "../../../../lib/constant";
+const {
+    stages,
+    toolHead,
+    markets,
+    notes,
+    accessType,
+    selectCountries,
+    accessTypeArray,
+    seats,
+    limit,
+    email,
+    instructions,
+    whiteList,
+    customize
+} = subscriptionCms;
+class Subscription extends Component {
+    constructor(props) {
+        super(props);
+        console.log("props", props);
+        this.state = {
+            // value: "yes",
+            countryValue: "yes",
+            multiple: true,
+            clear: false,
+            showField: "",
+            state: "",
+            formValues: {
+                notes: "",
+                seats: "",
+                supeUser: "",
+                emailContact: "",
+                whitelist: "",
+                limit: "",
+                instruction: ""
+            },
+            errorMessage: {
+                notes: "",
+                seats: "",
+                supeUser: "",
+                emailContact: "",
+                whitelist: "",
+                limit: "",
+                instruction: ""
+            },
+            disable: {
+                checkA: true,
+                checkB: true
+            }
 
-const Subscription = () => {
-    const {
-        stages,
-        toolHead,
-        markets,
-        notes,
-        accessType,
-        selectCountries,
-        accessTypeArray,
-        seats,
-        limit,
-        email,
-        instructions,
-        whiteList,
-        customize
-     } = subscriptionCms;
-
-    const [value, setValue] = useState("yes");
-    const [countryValue, setCountryValue] = useState("yes");
-    const [multiple, setMultiple] = useState(true);
-    const [clear, setClear] = useState(false);
-    const [showField, setShowField] = useState("");
-    const [state, setState] = useState("");
-    const [formValues, setFormValues] = useState({
-        notes: "",
-        seats: "",
-        supeUser: "",
-        emailContact: "",
-        whitelist: "",
-        limit: "",
-        instruction: ""
-    });
-    const [errorMessage, setErrorMessage] = useState({
-        notes: "",
-        seats: "",
-        supeUser: "",
-        emailContact: "",
-        whitelist: "",
-        limit: "",
-        instruction: ""
-    });
-
-    const handleAutocomplete = async (e, value) => {
-        if(!clear && value && !value.length){
-            const ValidateError = await validate("country", null);
-            setState(ValidateError);
-        }
-        else{
-            setState(false);
-        }
+        };
     }
 
-    const handleChangeRadio = (event) => {
+
+    handleChangeRadio = event => {
+        const { updateState } = this.props;
         const val = event.target.value;
-        setValue(val);
+        updateState({ subscription: { ...this.props, value: val } });
         if (val === constant.NO) {
-            setMultiple(false);
-            setClear(true);
+            updateState({ subscription: { ...this.props, multiple: false, clear: true, value: val } });
         }
         else {
-            setMultiple(true);
-            setClear(false);
+            updateState({ subscription: { ...this.props, multiple: true, clear: false, value: val } });
         }
     };
 
-    const handleChange = (event) => {
+    handleChange = event => {
+        const { formValue, updateState } = this.props;
         const fieldName = event.target.name;
         const filedValue = event.target.value;
-        setFormValues(prevState => ({
-            ...prevState,
-            [fieldName]: filedValue
-        }))
-        handleValidation(fieldName, filedValue);
+        updateState({ subscription: { ...this.props, formValue: { ...formValue, [fieldName]: filedValue } } }, () => {
+            this.handleValidation(fieldName, filedValue);
+        });
     };
 
-    const handleValidation = async (field, value) => {
-        console.log(field, value)
+    handleValidation = async (field, value) => {
         const validationError = await validate(field, value);
-        setErrorMessage(prevState => ({
-            ...prevState,
-            [field]: validationError,
-        }));
+        this.setState({
+            errorMessage: { [field]: validationError }
+        });
     };
 
-    const handleCountry = (event) => setCountryValue(event.target.value);
+    handleCountry = event => {
+        const { updateState } = this.props;
+        updateState({ subscription: { ...this.props, countryValue: event.target.value } })
+    }
 
-    const renderTypography = (children, variant, color) => {
+    renderTypography = (children, variant, color) => {
         return (
             <Typography
                 variant={variant}
@@ -119,31 +118,35 @@ const Subscription = () => {
         );
     };
 
-    const [disable, setDisable] = useState({
-        checkA: true,
-        checkB: true
-    });
-    const handleCheck = (event) => {
+    handleCheck = event => {
         const name = event.target.name;
         const value = event.target.checked;
-        if (name === "checkA" && value) {
-            return setDisable(prev =>({
-                ...prev,
-                checkA: false,
-            }))
+        if (name === "checkA") {
+            this.setState({
+                disable: { checkA: false, checkB: true }
+            });
+            if (!value) {
+                this.setState({
+                    disable: { ...this.state.disable, checkA: true }
+                });
+            }
         }
-        if (name === "checkB" && value) {
-            return setDisable( prev => ({
-                ...prev,
-                checkB: false
-            }))
+        if (name === "checkB") {
+            this.setState({
+                disable: { ...this.state.disable, checkB: false }
+            });
+            if (!value) {
+                this.setState({
+                    disable: { ...this.state.disable, checkB: true }
+                });
+            }
         }
-       return setDisable({checkA:true, checkB:true})
-    }
+    };
 
-    const renderTextField = (name, disable) => {
-        let error = false
-        if (errorMessage && errorMessage[name]) {
+    renderTextField = (name, handleChange, disable) => {
+        const { formValue } = this.props;
+        let error = false;
+        if (this.state.errorMessage && this.state.errorMessage[name]) {
             error = true;
         }
         return (
@@ -153,144 +156,156 @@ const Subscription = () => {
                 variant="outlined"
                 name={name}
                 placeholder={placeholder.enterYourText}
-                value={formValues[name]}
+                value={formValue[name]}
                 onChange={handleChange}
-                helperText={errorMessage && errorMessage[name]}
+                helperText={this.state.errorMessage && this.state.errorMessage[name]}
                 error={error}
                 disabled={disable}
             />
         );
     };
 
-    const handleRadio = (event) => {
-        console.log(event.target.value);
+    handleRadio = event => {
+        const { updateState } = this.props;
         const val = event.target.value;
-        if (val) {
-            setShowField(val);
-        };
+        if (val === "limit") 
+            updateState({ subscription: { ...this.props, showField: val, limit: val } });
+        else if (val === "contact")
+            updateState({ subscription: { ...this.props, contact: val, showField: val } });
+        else if (val === "access")
+            updateState({ subscription: { ...this.props, access: val, showField: val } });
+        else if (val === "website")
+            updateState({ subscription: { ...this.props, website: val, showField: val } });
+        else
+            updateState({ subscription: { ...this.props, whitelist: val, showField: val } });
     };
 
-    const renderText = (label, value, field) => {
-        return (<><Checkbox name={value} onChange={handleCheck} id={field} /><span style={{ color: "grey", fontSize: 16 }}>{label}</span></>)
-    }
-
-    return (
+    renderText = (label, value, field) => (
         <>
-            <Grid>
-                {renderTypography(stages, "subtitle1", "textSecondary")}
-                {renderTypography(toolHead, "h5")}
-
-                <Grid item xs={12}>
-                    {renderTypography(markets, "subtitle1", "textSecondary")}
-                    <FormControl component="fieldset">
-                        <RadioGroup
-                            value={value}
-                            onChange={handleChangeRadio}
-                        >
-                            <FormControlLabel
-                                value={constant.YES}
-                                control={<Radio />}
-                                label="Yes"
-                            />
-                            <FormControlLabel
-                                value={constant.NO}
-                                control={<Radio />}
-                                label="No"
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Grid>
-
-                <Grid item xs={12}>
-                    <Autocomplete multiple={multiple} clear={clear} handleChange={handleAutocomplete} state={state}/>
-                </Grid>
-
-                <br />
-                <Grid item xs={12}>
-                    {renderTypography(notes, "subtitle1", "textSecondary")}
-                    {renderTextField()}
-                </Grid>
-                <br />
-                <Grid item xs={12}>
-                    {renderTypography(accessType, "subtitle1", "textSecondary")}
-                    <FormControl component="fieldset">
-                        <RadioGroup>
-                            <FormControlLabel
-                                value={accessTypeArray[0].key}
-                                control={<Radio />}
-                                label={accessTypeArray[0].title}
-                                onChange={handleRadio}
-                            />
-                            {showField === "limit" && <Grid item xs={12}>
-                                {renderTypography(seats, "subtitle1", "textSecondary")}
-                                {renderTextField("seats")}
-                                {renderTypography(limit, "subtitle1", "textSecondary")}
-                                {renderTextField("limit")}
-                            </Grid>}
-
-                            <FormControlLabel
-                                value={accessTypeArray[1].key}
-                                control={<Radio />}
-                                label={accessTypeArray[1].title}
-                                onChange={handleRadio}
-                            />
-                            {showField === "contact" && <Grid item xs={7}>
-                                {renderText(email, "checkA", "emailContact")}
-                                {renderTextField("emailContact", disable.checkA)}
-                                {renderText(instructions, "checkB", "instruction")}
-                                {renderTextField("instruction", disable.checkB)}
-                            </Grid>}
-
-                            <FormControlLabel
-                                value={accessTypeArray[2].key}
-                                control={<Radio />}
-                                label={accessTypeArray[2].title}
-                                onChange={handleRadio}
-                            />
-                            <FormControlLabel
-                                value={accessTypeArray[3].key}
-                                control={<Radio />}
-                                label={accessTypeArray[3].title}
-                                onChange={handleRadio}
-                            />
-                            {showField === "whitelist" && <Grid item xs={12}>
-                                {renderTypography(whiteList, "subtitle1", "textSecondary")}
-                                {renderTextField("whitelist")}
-                            </Grid>}
-                            <FormControlLabel
-                                value={accessTypeArray[4].key}
-                                control={<Radio />}
-                                label={accessTypeArray[4].title}
-                                onChange={handleRadio}
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Grid>
-                <br />
-                <Grid item xs={12}>
-                    {renderTypography(selectCountries, "subtitle1", "textSecondary")}
-                    <FormControl component="fieldset">
-                        <RadioGroup
-                            value={countryValue}
-                            onChange={handleCountry}
-                        >
-                            <FormControlLabel
-                                value={constant.YES}
-                                control={<Radio />}
-                                label="Yes"
-                            />
-                            <FormControlLabel
-                                value={constant.NO}
-                                control={<Radio />}
-                                label={customize}
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Grid>
-            </Grid>
-            <br></br>
-            <Divider />
+            <FormControlLabel
+                control={
+                    <Checkbox name={value} onChange={this.handleCheck} id={field} />
+                }
+                label={
+                    <span style={{ color: "grey", fontSize: 16 }}>{label}</span>
+                }
+            />
         </>
-    )
+    );
+
+    renderRadio = (value, label, handleRadio) => (
+        <FormControlLabel
+            value={value}
+            control={<Radio />}
+            label={label}
+            onChange={handleRadio}
+        />
+    );
+
+    render() {
+        const {
+            disable
+        } = this.state;
+        const { value, updateState, countryValue, showField } = this.props;
+        return (
+            <>
+                <Grid>
+                    {this.renderTypography(stages, "subtitle1", "textSecondary")}
+                    {this.renderTypography(toolHead, "h5")}
+
+                    <Grid item xs={12}>
+                        {this.renderTypography(markets, "subtitle1", "textSecondary")}
+                        <FormControl component="fieldset">
+                            <RadioGroup value={value} onChange={(value) => this.handleChangeRadio(value)} >
+                                {this.renderRadio(constant.YES, "Yes")}
+                                {this.renderRadio(constant.NO, "No")}
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+
+                    <Grid item xs={12}>
+                        <Autocomplete
+                            {...this.props}
+                            updateState={updateState}
+                            subscription={true}
+                        />
+                    </Grid>
+
+                    <br />
+                    <Grid item xs={12}>
+                        {this.renderTypography(notes, "subtitle1", "textSecondary")}
+                        {this.renderTextField("notes", this.handleChange)}
+                    </Grid>
+                    <br />
+                    <Grid item xs={12}>
+                        {this.renderTypography(accessType, "subtitle1", "textSecondary")}
+                        <FormControl component="fieldset">
+                            <RadioGroup>
+                                {this.renderRadio(
+                                    accessTypeArray[0].key,
+                                    accessTypeArray[0].title,
+                                    this.handleRadio
+                                )}
+                                {showField === "limit" && (
+                                    <Grid item xs={12}>
+                                        {this.renderTypography(seats, "subtitle1", "textSecondary")}
+                                        {this.renderTextField("seats", this.handleChange)}
+                                        {this.renderTypography(limit, "subtitle1", "textSecondary")}
+                                        {this.renderTextField("limit", this.handleChange)}
+                                    </Grid>
+                                )}
+                                {this.renderRadio(
+                                    accessTypeArray[1].key,
+                                    accessTypeArray[1].title,
+                                    this.handleRadio
+                                )}
+                                {showField === "contact" && (
+                                    <Grid item xs={7}>
+                                        {this.renderText(email, "checkA", "emailContact")}
+                                        {this.renderTextField("emailContact", this.handleChange, disable.checkA)}
+                                        {this.renderText(instructions, "checkB", "instruction")}
+                                        {this.renderTextField("instruction", this.handleChange, disable.checkB)}
+                                    </Grid>
+                                )}
+                                {this.renderRadio(
+                                    accessTypeArray[2].key,
+                                    accessTypeArray[2].title,
+                                    this.handleRadio
+                                )}
+                                {this.renderRadio(
+                                    accessTypeArray[3].key,
+                                    accessTypeArray[3].title,
+                                    this.handleRadio
+                                )}
+                                {showField === "whitelist" && (
+                                    <Grid item xs={12}>
+                                        {this.renderTypography(whiteList, "subtitle1", "textSecondary")}
+                                        {this.renderTextField("whitelist", this.handleChange)}
+                                    </Grid>
+                                )}
+                                {this.renderRadio(
+                                    accessTypeArray[4].key,
+                                    accessTypeArray[4].title,
+                                    this.handleRadio
+                                )}
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <br />
+                    <Grid item xs={12}>
+                        {this.renderTypography(selectCountries, "subtitle1", "textSecondary")}
+                        <FormControl component="fieldset">
+                            <RadioGroup value={countryValue} onChange={this.handleCountry}>
+                                {this.renderRadio(constant.YES, "Yes")}
+                                {this.renderRadio(constant.NO, customize)}
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                </Grid>
+                <br></br>
+                <Divider />
+            </>
+        );
+    }
 }
 export default Subscription;

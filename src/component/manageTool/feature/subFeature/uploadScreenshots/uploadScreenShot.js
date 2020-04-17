@@ -1,45 +1,59 @@
-import React, { useState } from "react";
-import { Grid, Avatar, FormGroup, Button, IconButton } from "@material-ui/core";
+import React from "react";
+import { Grid, Avatar, FormGroup, Button, IconButton, TextField } from "@material-ui/core";
+import CloseIcon from '@material-ui/icons/Close';
+import PropTypes from "prop-types";
 
 import { toolCms, placeholder } from "../../../cms";
 
-import useStyle from "../style";
+import { useStyles, CloseButton } from "../style";
 
 const UploadScreenShot = (props) => {
-    const classes = useStyle();
-    const { renderTypography, renderTextField } = props;
-    const [showError, setShowError] = useState();
-    const [name, setName] = useState("");
-    const [multiple, setMultiple] = useState([]);
+    const classes = useStyles();
+    const { renderTypography, showError, screenshotName, multiple, val, currentImg, updateState } = props;
+    const { validation } = toolCms;
+
+    const activeStyle = {
+        border: ' 1px solid blue ',
+        margin: 5
+    }
 
     const handleChange = (event) => {
         const fileData = event.target.files;
         var reader = new FileReader();
         const { type, size } = fileData[0]
-        console.log(type, size);
         if (size > 2097152) {
-            return setShowError("Maximum upload file size : 2MB");
+            return updateState({ tools: { ...props, showError: validation.size } });
         }
         if (!type.match(/image[/](?:jpg|jpeg|png|gif)/)) {
-            return setShowError("Invalid File Type");
+            return updateState({ tools: { ...props, showError: validation.fileType } });
         }
         reader.readAsDataURL(fileData[0]);
-        reader.onloadend = function (e) {
-            if (multiple.length < 6) {
-                setMultiple(prevState => [...prevState, reader.result]);
+        const fileName = fileData[0].name;
+        reader.onloadend = () => {
+            if (multiple.length < 6 || val) {
+                if (currentImg && currentImg !== -1) {
+                    const keyIndex = currentImg;
+                    multiple[keyIndex] = reader.result;
+                    return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
+                }
+                multiple[currentImg] = reader.result;
+                return updateState({ tools: { ...props, currentImg: currentImg + 1, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
             }
         }
-        const fileName = fileData[0].name;
-        setName(fileName);
     };
 
     const removeImage = (index) => {
         multiple.splice(index, 1);
-        setMultiple([...multiple]);
+        updateState({ tools: { ...props, multiple: [...multiple], currentImg: index, val: "" } })
+    }
+
+    const ChangeImage = (value, index) => {
+        updateState({ tools: { ...props, val: value, currentImg: index } })
     }
 
     return (
         <>
+
             <Grid item xs={12}>
                 {renderTypography(
                     toolCms.uploadScreenShots,
@@ -48,9 +62,16 @@ const UploadScreenShot = (props) => {
                 )}
                 <FormGroup row>
                     {[0, 1, 2, 3, 4, 5].map((_, index) => (
-                        <IconButton aria-label="delete" onClick={() => removeImage(index)}>
-                            <Avatar src={multiple[index]} className={classes.large} variant="square" style={{ margin: 5 }} />
-                        </IconButton>
+                        <CloseButton key={index}>
+                            <div className="container" >
+                                <IconButton aria-label="replace" onClick={() => ChangeImage(screenshotName[index], index)}>
+                                    <Avatar src={multiple[index]} className={classes.large} variant="square" style={currentImg === index ? activeStyle : { margin: 5 }} />
+                                </IconButton>
+                                <IconButton aria-label="delete" onClick={() => removeImage(index)} className="btn">
+                                    <CloseIcon />
+                                </IconButton>
+                            </div>
+                        </CloseButton>
                     ))}
                 </FormGroup>
             </Grid>
@@ -71,10 +92,29 @@ const UploadScreenShot = (props) => {
                 </Button>
             </Grid>
             <Grid item xs={9}>
-                {renderTextField(placeholder.enterYourText, "screenshot")}
+                <TextField
+                    name={screenshotName}
+                    fullWidth
+                    margin="dense"
+                    variant="outlined"
+                    placeholder={placeholder.enterYourText}
+                    value={val}
+                />
             </Grid>
             {<span style={{ color: "red", fontSize: 15 }}>{showError}</span>}
         </>
     )
 };
+
+UploadScreenShot.default = {
+    multiple: [],
+    val: "",
+    currentImg: 0,
+    screenshotName: [],
+    updateState: () => {},
+    showError: ""
+}
+UploadScreenShot.propTypes = {
+    renderTypography: PropTypes.func.isRequired,
+}
 export default UploadScreenShot;

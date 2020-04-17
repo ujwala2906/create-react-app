@@ -12,6 +12,7 @@ import { Route } from "react-router-dom";
 import SideBar from "../sideBar";
 import ManageTool from "../manageTool";
 import AddTool from "../manageTool/feature";
+import Tools from "../manageTool/feature/tools";
 import Endorsement from "../endorsements";
 
 
@@ -60,10 +61,9 @@ const Dashboard = (props) => {
         </Hidden>
       </nav>
       <main className={classes.content}>
-        {/* <div className={classes.toolbar} /> */}
         <Route path="/all" exact component={Endorsement} />
         <Route path={`${path}manage-tool`} exact component={ManageTool} />
-        <Route path="/manage-tool/add-tool" exact component={AddTool} />
+        <Route path="/manage-tool/add-tool" exact component={Tools} />
       </main>
     </div>
   );

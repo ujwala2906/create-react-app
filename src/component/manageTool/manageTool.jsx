@@ -21,7 +21,6 @@ const ManageTool = props => {
           {manageToolCms.addNewTool}
         </Button>
       </Link>
-     
     </>
   );
 };

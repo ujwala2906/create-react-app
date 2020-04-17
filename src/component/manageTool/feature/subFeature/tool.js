@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
-    FormGroup,
     TextField,
     Typography,
     Grid,
     IconButton,
     FormControlLabel,
-    Checkbox,
     FormControl,
     Radio,
     RadioGroup,
@@ -15,71 +13,51 @@ import {
 } from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
 
+import UploadLogo from "./uploadLogo";
+import UploadScreenShot from "./uploadScreenshots";
+import Autocomplete from "./autocomplete";
+import RenderCheckbox from "./renderCheckbox";
+
 import { toolCms, placeholder } from "../../cms";
 
 import validate from "../yup";
 
-import UploadLogo from "./uploadLogo";
-import UploadScreenShot from "./uploadScreenshots";
-import Autocomplete from "./autocomplete"
+import { constant } from "../../../../lib/constant";
 
-import {constant} from "../../../../lib/constant";
-
-const Tool = () => {
+const Tool = (props) => {
+    const { value, updateState, addQuestions = [], formValue } = props;
     const {
         stages,
         aboutTool,
         toolName,
         websiteUrl,
         description,
-        insight,
-        type,
         limit,
         emailContact,
-        insightArray,
-        typeArray,
         questions,
-        insightType,
-        dataType,
         globalRegion,
         countries
     } = toolCms;
 
-    const { selectRegion , insightData, typeData, global} = constant;
+    const { selectRegion, global, title, description: information, email, url, questionField } = constant;
 
     const { searchTool, enterYourText } = placeholder;
 
-    const [value, setValue] = useState(selectRegion);
-    const [addQuestions, setAddQuestions] = useState([]);
-
-    const [error, setError] = useState({ insightErr: { message: "", isTrue: false }, typeErr: { message: "", isTrue: false } })
-
-    const [isInsight, setIsInsight] = useState([]);
-    const [isType, setIsType] = useState([]);
     const [errorMessage, setErrorMessage] = useState({
         title: "",
         description: "",
         url: "",
         logo: "",
         email: "",
-        questionField:""
+        questionField: ""
     });
-
-    const [formValue, setFormValue] = useState({
-        title: "",
-        url: "",
-        description: "",
-        questionField: "",
-    })
 
     const handleChange = (event) => {
         const fieldName = event.target.name;
         const filedValue = event.target.value;
-        setFormValue(prevState => ({
-            ...prevState,
-            [fieldName]: filedValue
-        }))
-        handleValidation(fieldName, filedValue);
+        updateState({ tools: { ...props, formValue: { ...formValue, [fieldName]: filedValue } } }, () => {
+            handleValidation(fieldName, filedValue);
+        })
     }
 
     const handleValidation = async (field, value) => {
@@ -104,78 +82,36 @@ const Tool = () => {
         );
     };
 
-    useEffect(() => {
-        if (!isInsight.length && error.insightErr && error.insightErr.isTrue) {
-            return setError(prevState => ({ ...prevState, insightErr: { message: insightType, isTrue: false } }));
-        }
-        if (!isType.length && error.typeErr && error.typeErr.isTrue) {
-            return setError(prevState => ({ ...prevState, typeErr: { message: dataType, isTrue: false } }));
-        }
-    }, [isInsight, isType, error]);
-
-
-    const handleCheck = (event) => {
-        const ids = event.target.id;
-        const fieldSelected = event.target.name;
-        const isChecked = event.target.checked;
-
-        const index = ids === insightData ? isInsight.indexOf(fieldSelected) : isType.indexOf(fieldSelected);
-        const data = ids === insightData ? isInsight : isType;
-
-        if (data.includes(fieldSelected) && !isChecked) {
-            if (index !== -1) {
-                data.splice(index, 1);
-                if (ids === insightData) {
-                    setError(prevState => ({ ...prevState, insightErr: { message: "", isTrue: true } }));
-                    return setIsInsight(preState => [...data]);
-                }
-                setError(prevState => ({ ...prevState, typeErr: { message: "", isTrue: true } }));
-                return setIsType(preState => [...data])
-            }
-            return false;
-        };
-        if (ids === insightData) {
-            setError(prevState => ({ ...prevState, insightErr: { message: "", isTrue: true } }));
-            return setIsInsight(prevState => [...prevState, fieldSelected])
-        };
-        setError(prevState => ({ ...prevState, typeErr: { message: "", isTrue: true } }));
-        return setIsType(prevState => [...prevState, fieldSelected])
-    };
-
-    const renderCheckBox = (label, filedName) => {
-        return (
-            <>
-                {label.map((item, index) => (
-                    <>
-                        <FormControlLabel control={<Checkbox onChange={handleCheck} name={item} id={filedName} />} label={item} key={`${index}hut`} />
-                    </>
-                ))}
-            </>
-        )
-    };
-
     const handlePush = () => {
-        setAddQuestions(preState => [...preState, formValue.questionField]);
-        setFormValue({ questionField: "" })
+        if (formValue.questionField) {
+            updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { ...formValue, questionField: "" } } })
+        }
     };
 
     const handleDelete = (index) => {
         addQuestions.splice(index, 1);
-        setAddQuestions(preState => [...preState]);
+        updateState({ tools: { ...props, addQuestions: [...addQuestions] } })
     };
 
     const handleValue = (event) => {
-        setValue(event.target.value)
+        updateState({ tools: { ...props, value: event.target.value } });
     };
 
-    const renderQuestions = () => {
-        return (
-            <>
-                {addQuestions.map((item, index) => (
-                    <li><Chip label={item} key={index} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
-                ))}
-            </>
-        )
+    const renderQuestions = () => (
+        <>
+            {addQuestions.map((item, index) => (
+                <li><Chip label={item} key={index} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
+            ))}
+        </>
+    );
+
+
+    const keyPress = (e) => {
+        if (e.keyCode === 13) {
+            if (formValue.questionField) {
+                updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { questionField: "" } } })
+            }
+        };
     };
 
     const renderTextField = (placeHolder, name, onClick, num, disable) => {
@@ -194,12 +130,23 @@ const Tool = () => {
                 onChange={onClick}
                 helperText={errorMessage && errorMessage[name]}
                 error={error}
-                multiline
+                multiline={num}
                 rows={num}
                 disabled={disable}
+                onKeyDown={keyPress}
             />
         );
     }
+
+    const renderRadio = (value, label) => (
+        <>
+            <FormControlLabel
+                value={value}
+                control={<Radio />}
+                label={label}
+            />
+        </>
+    );
 
     return (
         <>
@@ -207,19 +154,20 @@ const Tool = () => {
             {renderTypography(aboutTool, "h5")}
             {renderTypography(toolName, "subtitle1", "textSecondary")}
 
-            {renderTextField(searchTool, "title", handleChange)}
+            {renderTextField(searchTool, title, handleChange)}
 
-            <Grid container spacing={3}>
-                <UploadLogo />
+            <Grid container spacing={3} >
+
+                <UploadLogo {...props} />
 
                 <Grid item xs={12}>
                     {renderTypography(websiteUrl, "subtitle1", "textSecondary")}
-                    {renderTextField(enterYourText, "url", handleChange)}
+                    {renderTextField(enterYourText, url, handleChange)}
                 </Grid>
 
                 <Grid item xs={12}>
                     {renderTypography(description, "subtitle1", "textSecondary")}
-                    {renderTextField(enterYourText, "description", handleChange, "4")}
+                    {renderTextField(enterYourText, information, handleChange, "4")}
                 </Grid>
 
                 <Grid item xs={11}>
@@ -228,9 +176,9 @@ const Tool = () => {
                         "subtitle1",
                         "textSecondary"
                     )}
-                    {renderTextField(enterYourText, "questionField", handleChange, "", addQuestions.length >= 2)}
+                    {renderTextField(enterYourText, questionField, handleChange, "", addQuestions.length >= 2)}
                 </Grid>
-                <IconButton color="default" onClick={handlePush}>
+                <IconButton color="default" onClick={handlePush} disabled={addQuestions.length >= 2} >
                     <AddBoxIcon style={{ fontSize: 60, paddingTop: 20 }} />
                 </IconButton>
 
@@ -238,31 +186,9 @@ const Tool = () => {
                     {renderQuestions()}
                 </ul>
 
-                <Grid item xs={12}>
-                    {renderTypography(
-                        insight,
-                        "subtitle1",
-                        "textSecondary"
-                    )}
-                    <FormGroup row>
-                        {renderCheckBox(insightArray, insightData)}
-                    </FormGroup>
-                    {<span style={{ color: "red", fontSize: 15 }}>{error.insightErr && error.insightErr.message}</span>}
-                </Grid>
+                <RenderCheckbox renderTypography={renderTypography} {...props} />
 
-                <Grid item xs={12}>
-                    {renderTypography(
-                        type,
-                        "subtitle1",
-                        "textSecondary"
-                    )}
-                    <FormGroup row>
-                        {renderCheckBox(typeArray, typeData)}
-                    </FormGroup>
-                    {<span style={{ color: "red", fontSize: 15 }}>{error.typeErr && error.typeErr.message}</span>}
-                </Grid>
-
-                <UploadScreenShot renderTypography={renderTypography} renderTextField={renderTextField} />
+                <UploadScreenShot renderTypography={renderTypography} renderTextField={renderTextField} {...props} />
 
                 <Grid item xs={12}>
                     {renderTypography(
@@ -270,33 +196,25 @@ const Tool = () => {
                         "subtitle1",
                         "textSecondary"
                     )}
+
                     <FormControl component="fieldset">
                         <RadioGroup
                             value={value}
-                            onChange={handleValue}
+                            onChange={(value) => handleValue(value)}
                         >
-                            <FormControlLabel
-                                value={global}
-                                control={<Radio />}
-                                label={globalRegion}
-                            />
-                            <FormControlLabel
-                                value={selectRegion}
-                                control={<Radio />}
-                                label={countries}
-                            />
+                            {renderRadio(global, globalRegion)}
+                            {renderRadio(selectRegion, countries)}
                         </RadioGroup>
                     </FormControl>
 
-                    {value === selectRegion && <Autocomplete multiple={true} clear={false} />}
+                    {value === selectRegion && <Autocomplete multiple={true} clear={false} {...props} updateState={updateState} tools={true}/>}
 
                 </Grid>
 
                 <Grid item xs={12}>
                     {renderTypography(emailContact, "subtitle1", "textSecondary")}
-                    {renderTextField(enterYourText, "email", handleChange)}
+                    {renderTextField(enterYourText, email, handleChange)}
                 </Grid>
-
             </Grid>
             <br />
             <Divider />

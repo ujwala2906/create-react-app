@@ -59,7 +59,11 @@ const toolCms = {
         "Social",
         "Panel/Survey",
         "Competitive",
-    ]
+    ],
+    validation: {
+       size:  "Maximum upload file size : 2MB",
+       fileType: "Invalid File Type"
+    }
 };
 const placeholder = {
     searchTool: "Search for tool",

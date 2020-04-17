@@ -6,10 +6,16 @@ const constant = {
     suggestions: "Suggestions",
     selectRegion: "selectRegion",
     insightData: "insightData",
-    typeData:"typeData",
-    global:"global",
-    NO:"no",
-    YES:"yes"
+    typeData: "typeData",
+    global: "global",
+    NO: "no",
+    YES: "yes",
+    Submit: "Submit",
+    title: "title",
+    url: "url",
+    description:"description",
+    questionField: "questionField",
+    email: "email",
 }
 
 const suggestions = [
