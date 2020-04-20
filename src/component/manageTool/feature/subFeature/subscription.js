@@ -38,32 +38,12 @@ class Subscription extends Component {
         super(props);
         this.state = {
             multiple: true,
+            field: "",
             clear: false,
-            showField: "",
-            state: "",
-            formValues: {
-                notes: "",
-                seats: "",
-                supeUser: "",
-                emailContact: "",
-                whitelist: "",
-                limit: "",
-                instruction: ""
-            },
-            errorMessage: {
-                notes: "",
-                seats: "",
-                supeUser: "",
-                emailContact: "",
-                whitelist: "",
-                limit: "",
-                instruction: ""
-            },
             disable: {
                 checkA: true,
                 checkB: true
             }
-
         };
     }
 
@@ -84,16 +64,22 @@ class Subscription extends Component {
         const { formValue, updateState } = this.props;
         const fieldName = event.target.name;
         const filedValue = event.target.value;
-        updateState({ subscription: { ...this.props, formValue: { ...formValue, [fieldName]: filedValue } } }, () => {
-            this.handleValidation(fieldName, filedValue);
-        });
+        this.setState({ field: fieldName })
+        updateState({ subscription: { ...this.props, formValue: { ...formValue, [fieldName]: filedValue } } });
+    };
+
+    componentDidUpdate() {
+        const { formValue } = this.props;
+        if (this.state.field) {
+            this.handleValidation(this.state.field, formValue[this.state.field]);
+        };
     };
 
     handleValidation = async (field, value) => {
-        const validationError = await validate(field, value);
-        this.setState({
-            errorMessage: { [field]: validationError }
-        });
+        const { errorMessage, updateState } = this.props;
+        const validationError = await validate(field, value, 0);
+        this.setState({ field: "" })
+        return updateState({ subscription: { ...this.props, errorMessage: { ...errorMessage, [field]: validationError } } })
     };
 
     handleCountry = event => {
@@ -141,9 +127,9 @@ class Subscription extends Component {
     };
 
     renderTextField = (name, handleChange, disable) => {
-        const { formValue } = this.props;
+        const { formValue, errorMessage } = this.props;
         let error = false;
-        if (this.state.errorMessage && this.state.errorMessage[name]) {
+        if (errorMessage && errorMessage[name]) {
             error = true;
         }
         return (
@@ -155,26 +141,25 @@ class Subscription extends Component {
                 placeholder={placeholder.enterYourText}
                 value={formValue[name]}
                 onChange={handleChange}
-                helperText={this.state.errorMessage && this.state.errorMessage[name]}
+                helperText={errorMessage && errorMessage[name]}
                 error={error}
                 disabled={disable}
             />
         );
     };
 
-    handleRadio = event => {
-        const { updateState } = this.props;
+
+    handleValue = (event) => {
+        const { updateState, formValue } = this.props;
         const val = event.target.value;
-        if (val === "limit") 
-            updateState({ subscription: { ...this.props, showField: val, limit: val } });
-        else if (val === "contact")
-            updateState({ subscription: { ...this.props, contact: val, showField: val } });
-        else if (val === "access")
-            updateState({ subscription: { ...this.props, access: val, showField: val } });
-        else if (val === "website")
-            updateState({ subscription: { ...this.props, website: val, showField: val } });
-        else
-            updateState({ subscription: { ...this.props, whitelist: val, showField: val } });
+        const resetFields = {
+            seats: "",
+            emailContact: "",
+            instruction: "",
+            whitelist: "",
+            limit: ""
+        };
+        updateState({ subscription: { ...this.props, radioValue: event.target.value, showField: val, formValue: { ...formValue, ...resetFields } } });
     };
 
     renderText = (label, value, field) => (
@@ -190,20 +175,17 @@ class Subscription extends Component {
         </>
     );
 
-    renderRadio = (value, label, handleRadio) => (
+    renderRadio = (value, label) => (
         <FormControlLabel
             value={value}
             control={<Radio />}
             label={label}
-            onChange={handleRadio}
         />
     );
 
     render() {
-        const {
-            disable
-        } = this.state;
-        const { value, updateState, countryValue, showField } = this.props;
+        const { radioValue, value, updateState, countryValue, showField } = this.props;
+        const { disable } = this.state;
         return (
             <>
                 <Grid>
@@ -213,7 +195,7 @@ class Subscription extends Component {
                     <Grid item xs={12}>
                         {this.renderTypography(markets, "subtitle1", "textSecondary")}
                         <FormControl component="fieldset">
-                            <RadioGroup value={value} onChange={(value) => this.handleChangeRadio(value)} >
+                            <RadioGroup value={value} onChange={this.handleChangeRadio} >
                                 {this.renderRadio(constant.YES, "Yes")}
                                 {this.renderRadio(constant.NO, "No")}
                             </RadioGroup>
@@ -237,11 +219,13 @@ class Subscription extends Component {
                     <Grid item xs={12}>
                         {this.renderTypography(accessType, "subtitle1", "textSecondary")}
                         <FormControl component="fieldset">
-                            <RadioGroup>
+                            <RadioGroup
+                                value={radioValue}
+                                onChange={this.handleValue}>
+
                                 {this.renderRadio(
                                     accessTypeArray[0].key,
                                     accessTypeArray[0].title,
-                                    this.handleRadio
                                 )}
                                 {showField === "limit" && (
                                     <Grid item xs={12}>
@@ -254,7 +238,6 @@ class Subscription extends Component {
                                 {this.renderRadio(
                                     accessTypeArray[1].key,
                                     accessTypeArray[1].title,
-                                    this.handleRadio
                                 )}
                                 {showField === "contact" && (
                                     <Grid item xs={7}>
@@ -267,12 +250,10 @@ class Subscription extends Component {
                                 {this.renderRadio(
                                     accessTypeArray[2].key,
                                     accessTypeArray[2].title,
-                                    this.handleRadio
                                 )}
                                 {this.renderRadio(
                                     accessTypeArray[3].key,
                                     accessTypeArray[3].title,
-                                    this.handleRadio
                                 )}
                                 {showField === "whitelist" && (
                                     <Grid item xs={12}>
@@ -283,7 +264,6 @@ class Subscription extends Component {
                                 {this.renderRadio(
                                     accessTypeArray[4].key,
                                     accessTypeArray[4].title,
-                                    this.handleRadio
                                 )}
                             </RadioGroup>
                         </FormControl>

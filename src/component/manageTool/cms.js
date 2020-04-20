@@ -9,11 +9,11 @@ const subscriptionCms = {
     notes: "Additional Notes/Comments",
     accessType: "Please select access type",
     selectCountries: "Apply the same access across all selected countries ?",
-    seats:"Number of seats:",
-    limit:"If limited, please nominate a super user who currently has access :",
-    email:"If applicable, Please enter email contact",
+    seats: "Number of seats:",
+    limit: "If limited, please nominate a super user who currently has access :",
+    email: "If applicable, Please enter email contact",
     instructions: `If applicable, please provide general instructions regarding the contact information, (i.e. "Your iProspect Lead" or "Your Google account rep" etc.).`,
-    whiteList:"If whitelist, please nominate a super user who currently has access :",
+    whiteList: "If whitelist, please nominate a super user who currently has access :",
     accessTypeArray: [
         { title: "Limited Log-Ins Available", key: "limit" },
         { title: "Contact Required For Setup", key: "contact" },
@@ -21,7 +21,7 @@ const subscriptionCms = {
         { title: "Whitelist", key: "whitelist" },
         { title: "Only Website Link Required, No Log-In Necessary", key: "website" }
     ],
-    customize:"No(Please Customize Access In The Grid Below)"
+    customize: "No(Please Customize Access In The Grid Below)"
 }
 
 const toolCms = {
@@ -42,8 +42,8 @@ const toolCms = {
     questions: "Please add 1-2 examples of question this tool could answer.",
     insightType: "Select at least one Insight Type",
     dataType: "Select at least one Data Type",
-    countries:"Select Countries",
-    globalRegion:"Global",
+    countries: "Select Countries",
+    globalRegion: "Global",
     insightArray: [
         "Audience",
         "Culture & Trends",
@@ -61,8 +61,8 @@ const toolCms = {
         "Competitive",
     ],
     validation: {
-       size:  "Maximum upload file size : 2MB",
-       fileType: "Invalid File Type"
+        size: "Maximum upload file size : 2MB",
+        fileType: "Invalid File Type"
     }
 };
 const placeholder = {
@@ -70,6 +70,15 @@ const placeholder = {
     noFileChosen: "No file chosen",
     enterYourText: "Enter your text",
 };
+
+const validation = {
+    toolName: "Tool Name is required",
+    toolLength: "Tool name must be at most 50 characters",
+    url: "viewUrl must be a valid URL",
+    description: "Description Name is required",
+    minLength: " Description must have at least 50 characters",
+    maxLength: "Description must be at most 300 characters",
+}
 
 const country = [
     { title: 'Afghanistan' },
@@ -131,4 +140,4 @@ const country = [
     { title: 'Iraq' }
 
 ];
-export { manageToolCms, subscriptionCms, toolCms, placeholder, country }
+export { manageToolCms, subscriptionCms, toolCms, placeholder, country, validation }

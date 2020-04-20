@@ -20,7 +20,10 @@ const UploadScreenShot = (props) => {
     const handleChange = (event) => {
         const fileData = event.target.files;
         var reader = new FileReader();
-        const { type, size } = fileData[0]
+        const { type = false, size = false } = fileData[0] || {}
+        if (!type && !size) {
+            return false;
+        }
         if (size > 2097152) {
             return updateState({ tools: { ...props, showError: validation.size } });
         }
@@ -30,14 +33,14 @@ const UploadScreenShot = (props) => {
         reader.readAsDataURL(fileData[0]);
         const fileName = fileData[0].name;
         reader.onloadend = () => {
-            if (multiple.length < 6 || val) {
-                if (currentImg && currentImg !== -1) {
-                    const keyIndex = currentImg;
-                    multiple[keyIndex] = reader.result;
-                    return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
+            const repeat = screenshotName.includes(fileName);
+            if (!repeat) {
+                const keyIndex = currentImg;
+                multiple[keyIndex] = reader.result;
+                if (multiple.length === 6 && currentImg + 1 === 6) {
+                    return updateState({ tools: { ...props, currentImg: 0, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
                 }
-                multiple[currentImg] = reader.result;
-                return updateState({ tools: { ...props, currentImg: currentImg + 1, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
+                return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
             }
         }
     };
@@ -111,7 +114,7 @@ UploadScreenShot.default = {
     val: "",
     currentImg: 0,
     screenshotName: [],
-    updateState: () => {},
+    updateState: () => { },
     showError: ""
 }
 UploadScreenShot.propTypes = {

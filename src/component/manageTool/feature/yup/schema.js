@@ -32,19 +32,19 @@ const CountrySchema = yup.object().shape({
 
 const SeatsSchema = yup.object().shape({
     seats: yup.number()
-        .required().positive()
+        .positive()
         .max(9999)
         .typeError("Seats must be positive number")
 })
 
 const LimitSchema = yup.object().shape({
     limit: yup.string().email("SuperUser must be a valid email")
-        .required("SuperUser must be a valid email")
+    .required("SuperUser must be a valid email")
 });
 
 const ContactSchema = yup.object().shape({
     email: yup.string().email("Contact Email is a required field")
-        .required("Contact Email is a required field")
+    .required("Contact Email is a required field")
 });
 
 const InstructionSchema = yup.object().shape({
@@ -55,5 +55,6 @@ const QuestionSchema = yup.object().shape({
     question: yup.string().required("Enter at least one question")
 });
 
+const EmptySchema = yup.object().shape();
 
-export { QuestionSchema, ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, LimitSchema, ContactSchema, InstructionSchema };
+export { QuestionSchema, ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, LimitSchema, ContactSchema, InstructionSchema, EmptySchema };

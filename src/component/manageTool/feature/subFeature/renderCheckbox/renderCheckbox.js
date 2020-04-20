@@ -7,10 +7,9 @@ import { toolCms } from "../../../cms";
 import { constant } from "../../../../../lib/constant";
 
 const RenderCheckbox = (props) => {
-    const { renderTypography, isInsight, isType, updateState } = props;
+    const { renderTypography, isInsight, isType, updateState, isChecked } = props;
     const { insight, insightArray, typeArray, type, insightType, dataType, } = toolCms;
     const { insightData, typeData } = constant;
-
     const [error, setError] = useState({ insightErr: { message: "", isTrue: false }, typeErr: { message: "", isTrue: false } })
 
     useEffect(() => {
@@ -25,7 +24,8 @@ const RenderCheckbox = (props) => {
     const handleCheck = (event) => {
         const ids = event.target.id;
         const fieldSelected = event.target.name;
-        const isChecked = event.target.checked;
+        updateState({ tools: { ...props, isChecked: event.target.checked } })
+        // isChecked = event.target.checked;
 
         const index = ids === insightData ? isInsight.indexOf(fieldSelected) : isType.indexOf(fieldSelected);
         const data = ids === insightData ? isInsight : isType;
@@ -51,7 +51,17 @@ const RenderCheckbox = (props) => {
     };
 
     const renderCheckBox = (label, filedName) => {
+        return (
+            <>
+                {label.map((item, index) => (
+                    <>
+                        <FormControlLabel key={index} control={<Checkbox onChange={handleCheck} name={item} id={filedName}  />} label={item} />
+                    </>
+                ))}
+            </>)
+    };
 
+    const renderCheckBox2 = (label, filedName) => {
         return (
             <>
                 {label.map((item, index) => (
@@ -83,7 +93,7 @@ const RenderCheckbox = (props) => {
                     "textSecondary"
                 )}
                 <FormGroup row>
-                    {renderCheckBox(typeArray, typeData)}
+                    {renderCheckBox2(typeArray, typeData)}
                 </FormGroup>
                 {<span style={{ color: "red", fontSize: 15 }}>{error.typeErr && error.typeErr.message}</span>}
             </Grid>

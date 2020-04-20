@@ -1,18 +1,34 @@
 import React, { Component } from "react";
 import NavigateNextIcon from "@material-ui/icons/NavigateNext";
 import NavigateBeforeIcon from "@material-ui/icons/NavigateBefore";
-import { IconButton, Container, CardActions, Button } from "@material-ui/core";
+import {
+  IconButton,
+  Container,
+  CardActions,
+  Button,
+  Snackbar
+} from "@material-ui/core";
+import MuiAlert from "@material-ui/lab/Alert";
 
 import { Tool, Subscription } from "./subFeature";
 
 import { constant } from "../../../lib/constant";
 
+import validate from "./yup";
+
+const Alert = props => {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+};
 export default class Tools extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      alertError: "",
+      openAlert: false,
+      button: true,
       stage: false,
       tools: {
+        isChecked: false,
         value: constant.selectRegion,
         addQuestions: [],
         errorMessage: {
@@ -67,27 +83,24 @@ export default class Tools extends Component {
           whitelist: "",
           limit: ""
         },
-        limit: "",
-        contact: "",
-        access: "",
-        website: "",
-        whitelist: "",
+        radioValue: "",
         errorMessage: {
-          notes: "",
           seats: "",
           supeUser: "",
           emailContact: "",
           whitelist: "",
           limit: "",
           instruction: ""
+        },
+        disable: {
+          checkA: true,
+          checkB: true
         }
       }
     };
   }
 
   handlePage = () => this.setState({ ...this.state, stage: !this.state.stage });
-
-  getData = () => console.log(this.state);
 
   Footer = () => {
     return (
@@ -104,7 +117,11 @@ export default class Tools extends Component {
             <IconButton color="primary" onClick={this.handlePage}>
               <NavigateBeforeIcon style={{ fontSize: 40 }} />
             </IconButton>
-            <Button variant="contained" color="primary" onClick={this.getData}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={this.checkValidation}
+            >
               {constant.Submit}
             </Button>
           </>
@@ -113,9 +130,45 @@ export default class Tools extends Component {
     );
   };
 
+  handleAlert = () => this.setState({ openAlert: !this.state.openAlert });
+
+  checkValidation = async () => {
+    const { tools, subscription } = this.state;
+    const validFields = Object.assign(tools.formValue, {
+      error: subscription.errorMessage
+    });
+    for (let [key, value] of Object.entries(validFields)) {
+      if (key === "error") {
+        for (let [key, val] of Object.entries(value)) {
+          if (val) {
+            const error = await validate(key, val, 0);
+            if (error) {
+              return this.setState({ alertError: error, openAlert: true });
+            }
+          }
+        }
+      }
+      const error = await validate(key, value, tools.addQuestions.length);
+      if (error) {
+        return this.setState({ alertError: error, openAlert: true });
+      }
+    }
+    return console.log(this.state);
+  };
+
   render() {
     return (
       <>
+        <Snackbar
+          open={this.state.openAlert}
+          autoHideDuration={1000}
+          onClose={this.handleAlert}
+        >
+          <Alert onClose={this.handleAlert} severity="error">
+            {this.state.alertError}
+          </Alert>
+        </Snackbar>
+
         <Container>
           {!this.state.stage && (
             <Tool

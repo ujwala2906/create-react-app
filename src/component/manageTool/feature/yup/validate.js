@@ -1,7 +1,7 @@
 import { validateValue, handlePromiseError } from "../../../../lib/helper";
-import { ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema,QuestionSchema, LimitSchema, ContactSchema, InstructionSchema } from "./schema";
+import { ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, EmptySchema, QuestionSchema, LimitSchema, ContactSchema, InstructionSchema } from "./schema";
 
-const validate = async (field, value) => {
+const validate = async (field, value, length) => {
     let promise = "";
     switch (field) {
         case "title":
@@ -35,7 +35,11 @@ const validate = async (field, value) => {
             promise = validateValue(InstructionSchema, { instruction: value });
             break;
         case "questionField":
-            promise = validateValue(QuestionSchema, { question: value });
+            if (!length) {
+                promise = validateValue(QuestionSchema, { question: value });
+                break;
+            }
+            promise = validateValue(EmptySchema, { "": "" })
             break;
         default:
             return "";

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
     TextField,
     Typography,
@@ -25,7 +25,8 @@ import validate from "../yup";
 import { constant } from "../../../../lib/constant";
 
 const Tool = (props) => {
-    const { value, updateState, addQuestions = [], formValue } = props;
+    const { value, updateState, addQuestions = [], formValue, errorMessage } = props;
+
     const {
         stages,
         aboutTool,
@@ -43,30 +44,28 @@ const Tool = (props) => {
 
     const { searchTool, enterYourText } = placeholder;
 
-    const [errorMessage, setErrorMessage] = useState({
-        title: "",
-        description: "",
-        url: "",
-        logo: "",
-        email: "",
-        questionField: ""
-    });
+    const [field, setField] = useState("");
 
     const handleChange = (event) => {
         const fieldName = event.target.name;
         const filedValue = event.target.value;
-        updateState({ tools: { ...props, formValue: { ...formValue, [fieldName]: filedValue } } }, () => {
-            handleValidation(fieldName, filedValue);
-        })
+        setField(fieldName);
+        updateState({ tools: { ...props, formValue: { ...formValue, [fieldName]: filedValue } } });
     }
 
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleValidation = async (field, value) => {
-        const validationError = await validate(field, value);
-        setErrorMessage(prevState => ({
-            ...prevState,
-            [field]: validationError,
-        }));
+        const validationError = await validate(field, value, addQuestions.length);
+        setField("");
+        return updateState({ tools: { ...props, errorMessage: { ...errorMessage, [field]: validationError } } })
     };
+
+    useEffect(() => {
+        if (field) {
+            handleValidation(field, formValue[field]);
+        }
+    }, [formValue, field, handleValidation]);
+
 
     const renderTypography = (children, variant, color) => {
         return (
@@ -82,10 +81,20 @@ const Tool = (props) => {
         );
     };
 
+    const repeated = addQuestions.length && addQuestions.includes(formValue.questionField);
     const handlePush = () => {
-        if (formValue.questionField) {
+        const { addQuestions } = props;
+        if (formValue.questionField && !repeated) {
             updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { ...formValue, questionField: "" } } })
         }
+    };
+
+    const keyPress = (e) => {
+        if (e.keyCode === 13) {
+            if (formValue.questionField && !repeated) {
+                updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { ...formValue, questionField: "" } } })
+            }
+        };
     };
 
     const handleDelete = (index) => {
@@ -100,19 +109,12 @@ const Tool = (props) => {
     const renderQuestions = () => (
         <>
             {addQuestions.map((item, index) => (
-                <li><Chip label={item} key={index} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
+                <ul>
+                    <li><Chip label={item} key={index} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
+                </ul>
             ))}
         </>
     );
-
-
-    const keyPress = (e) => {
-        if (e.keyCode === 13) {
-            if (formValue.questionField) {
-                updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { questionField: "" } } })
-            }
-        };
-    };
 
     const renderTextField = (placeHolder, name, onClick, num, disable) => {
         let error = false
@@ -182,9 +184,8 @@ const Tool = (props) => {
                     <AddBoxIcon style={{ fontSize: 60, paddingTop: 20 }} />
                 </IconButton>
 
-                <ul>
-                    {renderQuestions()}
-                </ul>
+                {renderQuestions()}
+                {field === questionField && !addQuestions.length && <span style={{ color: "red", fontSize: 15 }}>Enter at least one question</span>}
 
                 <RenderCheckbox renderTypography={renderTypography} {...props} />
 
@@ -207,7 +208,7 @@ const Tool = (props) => {
                         </RadioGroup>
                     </FormControl>
 
-                    {value === selectRegion && <Autocomplete multiple={true} clear={false} {...props} updateState={updateState} tools={true}/>}
+                    {value === selectRegion && <Autocomplete multiple={true} clear={false} {...props} updateState={updateState} tools={true} />}
 
                 </Grid>
 
