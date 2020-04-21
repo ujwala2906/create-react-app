@@ -12,6 +12,7 @@ import {
     Chip
 } from "@material-ui/core";
 import AddBoxIcon from "@material-ui/icons/AddBox";
+import PropTypes from "prop-types";
 
 import UploadLogo from "./uploadLogo";
 import UploadScreenShot from "./uploadScreenshots";
@@ -109,9 +110,7 @@ const Tool = (props) => {
     const renderQuestions = () => (
         <>
             {addQuestions.map((item, index) => (
-                <ul>
-                    <li><Chip label={item} key={index} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
-                </ul>
+                <li><Chip label={item} key={index} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
             ))}
         </>
     );
@@ -120,6 +119,10 @@ const Tool = (props) => {
         let error = false
         if (errorMessage && errorMessage[name]) {
             error = true;
+        }
+        let multiline = false;
+        if (num) {
+            multiline = true;
         }
         return (
             <TextField
@@ -132,7 +135,7 @@ const Tool = (props) => {
                 onChange={onClick}
                 helperText={errorMessage && errorMessage[name]}
                 error={error}
-                multiline={num}
+                multiline={multiline}
                 rows={num}
                 disabled={disable}
                 onKeyDown={keyPress}
@@ -169,7 +172,7 @@ const Tool = (props) => {
 
                 <Grid item xs={12}>
                     {renderTypography(description, "subtitle1", "textSecondary")}
-                    {renderTextField(enterYourText, information, handleChange, "4")}
+                    {renderTextField(enterYourText, information, handleChange, 4)}
                 </Grid>
 
                 <Grid item xs={11}>
@@ -183,8 +186,9 @@ const Tool = (props) => {
                 <IconButton color="default" onClick={handlePush} disabled={addQuestions.length >= 2} >
                     <AddBoxIcon style={{ fontSize: 60, paddingTop: 20 }} />
                 </IconButton>
-
-                {renderQuestions()}
+                <ul>
+                    {renderQuestions()}
+                </ul>
                 {field === questionField && !addQuestions.length && <span style={{ color: "red", fontSize: 15 }}>Enter at least one question</span>}
 
                 <RenderCheckbox renderTypography={renderTypography} {...props} />
@@ -208,7 +212,7 @@ const Tool = (props) => {
                         </RadioGroup>
                     </FormControl>
 
-                    {value === selectRegion && <Autocomplete multiple={true} clear={false} {...props} updateState={updateState} tools={true} />}
+                    {value === selectRegion && <Autocomplete clear={false} {...props} updateState={updateState} tools={true} />}
 
                 </Grid>
 
@@ -221,5 +225,22 @@ const Tool = (props) => {
             <Divider />
         </>
     )
+}
+
+
+Tool.default = {
+    updateState: () => { },
+    addQuestions: [],
+    value: "",
+};
+Tool.propTypes = {
+    formValue: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.object,
+    ]).isRequired,
+    errorMessage: PropTypes.oneOfType([
+        PropTypes.string,
+        PropTypes.object,
+    ]).isRequired,
 }
 export default Tool;

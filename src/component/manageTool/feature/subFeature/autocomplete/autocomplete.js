@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Autocomplete as MaterialAutocomplete } from '@material-ui/lab';
 import TextField from '@material-ui/core/TextField';
+import PropTypes from "prop-types";
 
 import validate from "../../yup";
 
@@ -8,7 +9,7 @@ import { country } from "../../../cms";
 
 const Autocomplete = (props) => {
 
-    const { multiple = true, clear = false, updateState, autocompleteName, tools , subscription} = props;
+    const { clear = false, updateState, autocompleteName, tools, subscription, autoVal = true } = props;
 
     const [state, setState] = useState();
 
@@ -27,38 +28,50 @@ const Autocomplete = (props) => {
         }
     };
 
+    const handleValue = (e, value) => {
+        updateState({ subscription: { ...props, name: value, autocompleteName: [] } })
+    }
     return (
         <>
-            <MaterialAutocomplete
-                multiple={multiple}
-                id="tags-outlined"
+            {!autoVal && <MaterialAutocomplete
+                id="outlined"
                 options={country}
                 getOptionLabel={(option) => option.title}
-                filterSelectedOptions
-                disableClearable={clear}
-                onChange={handleChange}
                 defaultValue={autocompleteName}
+                onChange={handleValue}
+                disableClearable={true}
                 renderInput={(params) => (
-                    <TextField
-                        {...params}
-                        margin="dense"
-                        variant="outlined"
-                        placeholder="Select..."
-                        onChange={handleChange}
-                        error={state}
-                        helperText={state}
-                    />
+                    <TextField {...params} variant="outlined" margin="dense" placeholder="Select..." />
                 )}
-            />
+            />}
+            {autoVal && <MaterialAutocomplete
+                multiple
+                id="outlined-multi"
+                filterSelectedOptions
+                options={country}
+                getOptionLabel={(option) => option.title}
+                defaultValue={autocompleteName}
+                onChange={handleChange}
+                renderInput={(params) => (
+                    <TextField {...params} variant="outlined" margin="dense" placeholder="Select..." error={state}
+                        helperText={state} />
+                )}
+            />}
         </>
     )
 };
 
+
 Autocomplete.default = {
-    multiple: true,
     clear: false,
     autocompleteName: [],
     updateState: () => { },
+    autoVal: true
+};
+
+Autocomplete.propTypes = {
+    tools: PropTypes.bool,
+    subscription: PropTypes.bool
 };
 
 

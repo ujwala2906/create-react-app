@@ -40,10 +40,6 @@ class Subscription extends Component {
             multiple: true,
             field: "",
             clear: false,
-            disable: {
-                checkA: true,
-                checkB: true
-            }
         };
     }
 
@@ -53,10 +49,10 @@ class Subscription extends Component {
         const val = event.target.value;
         updateState({ subscription: { ...this.props, value: val } });
         if (val === constant.NO) {
-            updateState({ subscription: { ...this.props, multiple: false, clear: true, value: val } });
+            updateState({ subscription: { ...this.props, multiple: false, clear: true, value: val, autoVal: false } });
         }
         else {
-            updateState({ subscription: { ...this.props, multiple: true, clear: false, value: val } });
+            updateState({ subscription: { ...this.props, multiple: true, clear: false, value: val, autoVal: true } });
         }
     };
 
@@ -102,28 +98,12 @@ class Subscription extends Component {
     };
 
     handleCheck = event => {
-        const name = event.target.name;
-        const value = event.target.checked;
-        if (name === "checkA") {
-            this.setState({
-                disable: { checkA: false, checkB: true }
-            });
-            if (!value) {
-                this.setState({
-                    disable: { ...this.state.disable, checkA: true }
-                });
-            }
-        }
-        if (name === "checkB") {
-            this.setState({
-                disable: { ...this.state.disable, checkB: false }
-            });
-            if (!value) {
-                this.setState({
-                    disable: { ...this.state.disable, checkB: true }
-                });
-            }
-        }
+        const { updateState, disable, formValue } = this.props;
+        const resetFields = {
+            emailContact: "",
+            instruction: ""
+        };
+        updateState({ subscription: { ...this.props, disable: { ...disable, [event.target.name]: event.target.checked, formValue: { ...formValue, ...resetFields } } } });
     };
 
     renderTextField = (name, handleChange, disable) => {
@@ -131,7 +111,8 @@ class Subscription extends Component {
         let error = false;
         if (errorMessage && errorMessage[name]) {
             error = true;
-        }
+        };
+        const val = (!disable && formValue[name]) || "";
         return (
             <TextField
                 fullWidth
@@ -139,7 +120,7 @@ class Subscription extends Component {
                 variant="outlined"
                 name={name}
                 placeholder={placeholder.enterYourText}
-                value={formValue[name]}
+                value={val}
                 onChange={handleChange}
                 helperText={errorMessage && errorMessage[name]}
                 error={error}
@@ -162,18 +143,19 @@ class Subscription extends Component {
         updateState({ subscription: { ...this.props, radioValue: event.target.value, showField: val, formValue: { ...formValue, ...resetFields } } });
     };
 
-    renderText = (label, value, field) => (
-        <>
+    renderText = (label, value, field) => {
+        const { disable } = this.props;
+        return (<>
             <FormControlLabel
                 control={
-                    <Checkbox name={value} onChange={this.handleCheck} id={field} />
+                    <Checkbox name={value} onChange={this.handleCheck} id={field} checked={disable[value]} />
                 }
                 label={
                     <span style={{ color: "grey", fontSize: 16 }}>{label}</span>
                 }
             />
-        </>
-    );
+        </>)
+    };
 
     renderRadio = (value, label) => (
         <FormControlLabel
@@ -184,8 +166,7 @@ class Subscription extends Component {
     );
 
     render() {
-        const { radioValue, value, updateState, countryValue, showField } = this.props;
-        const { disable } = this.state;
+        const { radioValue, value, updateState, countryValue, showField, disable } = this.props;
         return (
             <>
                 <Grid>
@@ -242,9 +223,9 @@ class Subscription extends Component {
                                 {showField === "contact" && (
                                     <Grid item xs={7}>
                                         {this.renderText(email, "checkA", "emailContact")}
-                                        {this.renderTextField("emailContact", this.handleChange, disable.checkA)}
+                                        {this.renderTextField("emailContact", this.handleChange, !disable.checkA)}
                                         {this.renderText(instructions, "checkB", "instruction")}
-                                        {this.renderTextField("instruction", this.handleChange, disable.checkB)}
+                                        {this.renderTextField("instruction", this.handleChange, !disable.checkB)}
                                     </Grid>
                                 )}
                                 {this.renderRadio(

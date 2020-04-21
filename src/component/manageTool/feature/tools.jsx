@@ -67,6 +67,7 @@ export default class Tools extends Component {
         autocompleteName: []
       },
       subscription: {
+        autoVal: true,
         value: constant.YES,
         countryValue: constant.YES,
         multiple: true,
@@ -74,6 +75,7 @@ export default class Tools extends Component {
         showField: "",
         state: "",
         autocompleteName: [],
+        name: "",
         formValue: {
           notes: "",
           seats: "",
@@ -93,8 +95,8 @@ export default class Tools extends Component {
           instruction: ""
         },
         disable: {
-          checkA: true,
-          checkB: true
+          checkA: false,
+          checkB: false
         }
       }
     };

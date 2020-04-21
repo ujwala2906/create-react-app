@@ -24,8 +24,7 @@ const RenderCheckbox = (props) => {
     const handleCheck = (event) => {
         const ids = event.target.id;
         const fieldSelected = event.target.name;
-        updateState({ tools: { ...props, isChecked: event.target.checked } })
-        // isChecked = event.target.checked;
+        updateState({ tools: { ...props, isChecked: event.target.checked } });
 
         const index = ids === insightData ? isInsight.indexOf(fieldSelected) : isType.indexOf(fieldSelected);
         const data = ids === insightData ? isInsight : isType;
@@ -47,28 +46,16 @@ const RenderCheckbox = (props) => {
             return updateState({ tools: { ...props, isInsight: [...isInsight, fieldSelected] } })
         };
         setError(prevState => ({ ...prevState, typeErr: { message: "", isTrue: true } }));
-        return updateState({ tools: { ...props, isType: [...isType, fieldSelected] } })
+        return updateState({ tools: { ...props, isType: [...isType, fieldSelected] } });
     };
 
     const renderCheckBox = (label, filedName) => {
         return (
             <>
-                {label.map((item, index) => (
-                    <>
-                        <FormControlLabel key={index} control={<Checkbox onChange={handleCheck} name={item} id={filedName}  />} label={item} />
-                    </>
-                ))}
-            </>)
-    };
-
-    const renderCheckBox2 = (label, filedName) => {
-        return (
-            <>
-                {label.map((item, index) => (
-                    <>
-                        <FormControlLabel key={index} control={<Checkbox onChange={handleCheck} name={item} id={filedName} />} label={item} />
-                    </>
-                ))}
+                {label.map((item, index) => {
+                    const isChecked = (filedName === insightData && isInsight.includes(item)) || isType.includes(item);
+                    return <FormControlLabel key={index} control={<Checkbox onChange={handleCheck} name={item} id={filedName} checked={isChecked} />} label={item} />
+                })}
             </>)
     };
 
@@ -93,7 +80,7 @@ const RenderCheckbox = (props) => {
                     "textSecondary"
                 )}
                 <FormGroup row>
-                    {renderCheckBox2(typeArray, typeData)}
+                    {renderCheckBox(typeArray, typeData)}
                 </FormGroup>
                 {<span style={{ color: "red", fontSize: 15 }}>{error.typeErr && error.typeErr.message}</span>}
             </Grid>
@@ -108,5 +95,6 @@ RenderCheckbox.default = {
 }
 RenderCheckbox.propTypes = {
     renderTypography: PropTypes.func.isRequired,
+    isChecked: PropTypes.bool,
 }
 export default RenderCheckbox; 

@@ -96,7 +96,6 @@ const UploadScreenShot = (props) => {
             </Grid>
             <Grid item xs={9}>
                 <TextField
-                    name={screenshotName}
                     fullWidth
                     margin="dense"
                     variant="outlined"
