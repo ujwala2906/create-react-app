@@ -28,11 +28,12 @@ export default class Tools extends Component {
       button: true,
       stage: false,
       tools: {
+        isErrors: false,
         isChecked: false,
         value: constant.selectRegion,
         addQuestions: [],
         errorMessage: {
-          title: "",
+          tool: "",
           description: "",
           url: "",
           logo: "",
@@ -40,7 +41,7 @@ export default class Tools extends Component {
           questionField: ""
         },
         formValue: {
-          title: "",
+          tool: "",
           url: "",
           description: "",
           questionField: ""
@@ -92,7 +93,8 @@ export default class Tools extends Component {
           emailContact: "",
           whitelist: "",
           limit: "",
-          instruction: ""
+          instruction: "",
+          country: ""
         },
         disable: {
           checkA: false,
@@ -142,17 +144,32 @@ export default class Tools extends Component {
     for (let [key, value] of Object.entries(validFields)) {
       if (key === "error") {
         for (let [key, val] of Object.entries(value)) {
+          if ((key === "country" || key === "instruction") && val) {
+            return this.setState({
+              alertError: val,
+              openAlert: true
+            });
+          }
           if (val) {
             const error = await validate(key, val, 0);
             if (error) {
-              return this.setState({ alertError: error, openAlert: true });
+              return this.setState({
+                alertError: error,
+                openAlert: true
+              });
             }
           }
         }
       }
       const error = await validate(key, value, tools.addQuestions.length);
-      if (error) {
-        return this.setState({ alertError: error, openAlert: true });
+      if (!value) {
+        this.setState({ tools: { ...this.state.tools, isErrors: true } });
+      }
+      if (error && key !== "description") {
+        return this.setState({
+          alertError: error,
+          openAlert: true
+        });
       }
     }
     return console.log(this.state);

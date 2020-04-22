@@ -33,26 +33,26 @@ const UploadScreenShot = (props) => {
         reader.readAsDataURL(fileData[0]);
         const fileName = fileData[0].name;
         reader.onloadend = () => {
-            const repeat = screenshotName.includes(fileName);
-            if (!repeat) {
-                const keyIndex = currentImg;
-                multiple[keyIndex] = reader.result;
-                if (multiple.length === 6 && currentImg + 1 === 6) {
-                    return updateState({ tools: { ...props, currentImg: 0, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
-                }
-                return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: [...multiple], showError: "", screenshotName: [...screenshotName, fileName] } });
+            const keyIndex = currentImg;
+            multiple[keyIndex] = reader.result;
+            screenshotName[keyIndex] = fileName;
+            if (multiple.length === 6 && currentImg + 1 === 6) {
+                return updateState({ tools: { ...props, currentImg: 0, multiple: [...multiple], showError: "", screenshotName: screenshotName } });
             }
+            return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: [...multiple], showError: "", screenshotName: screenshotName } });
         }
+        event.target.value = "";
     };
 
     const removeImage = (index) => {
         multiple.splice(index, 1);
-        updateState({ tools: { ...props, multiple: [...multiple], currentImg: index, val: "" } })
+        screenshotName.splice(index, 1);
+        updateState({ tools: { ...props, multiple: [...multiple], currentImg: index, val: "", screenshotName: screenshotName } })
     }
 
     const ChangeImage = (value, index) => {
         updateState({ tools: { ...props, val: value, currentImg: index } })
-    }
+    };
 
     return (
         <>

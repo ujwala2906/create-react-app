@@ -49,7 +49,7 @@ class Subscription extends Component {
         const val = event.target.value;
         updateState({ subscription: { ...this.props, value: val } });
         if (val === constant.NO) {
-            updateState({ subscription: { ...this.props, multiple: false, clear: true, value: val, autoVal: false } });
+            updateState({ subscription: { ...this.props, multiple: false, clear: true, value: val, autoVal: false} });
         }
         else {
             updateState({ subscription: { ...this.props, multiple: true, clear: false, value: val, autoVal: true } });
@@ -131,7 +131,7 @@ class Subscription extends Component {
 
 
     handleValue = (event) => {
-        const { updateState, formValue } = this.props;
+        const { updateState, formValue, errorMessage } = this.props;
         const val = event.target.value;
         const resetFields = {
             seats: "",
@@ -140,7 +140,15 @@ class Subscription extends Component {
             whitelist: "",
             limit: ""
         };
-        updateState({ subscription: { ...this.props, radioValue: event.target.value, showField: val, formValue: { ...formValue, ...resetFields } } });
+        const errorField = {
+            seats: "",
+            supeUser: "",
+            emailContact: "",
+            whitelist: "",
+            limit: "",
+            instruction: ""
+        };
+        updateState({ subscription: { ...this.props, radioValue: event.target.value, showField: val, formValue: { ...formValue, ...resetFields }, errorMessage: { ...errorMessage, ...errorField } } });
     };
 
     renderText = (label, value, field) => {

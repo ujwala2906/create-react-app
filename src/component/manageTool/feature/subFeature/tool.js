@@ -26,7 +26,7 @@ import validate from "../yup";
 import { constant } from "../../../../lib/constant";
 
 const Tool = (props) => {
-    const { value, updateState, addQuestions = [], formValue, errorMessage } = props;
+    const { value, updateState, addQuestions = [], formValue, errorMessage, isErrors } = props;
 
     const {
         stages,
@@ -40,6 +40,14 @@ const Tool = (props) => {
         globalRegion,
         countries
     } = toolCms;
+
+    const upperCaseFirstLetter = stringData => {
+        if (!stringData) {
+            return "";
+        }
+        const string = stringData.charAt(0).toUpperCase() + stringData.slice(1);
+        return string;
+    };
 
     const { selectRegion, global, title, description: information, email, url, questionField } = constant;
 
@@ -56,7 +64,7 @@ const Tool = (props) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleValidation = async (field, value) => {
-        const validationError = await validate(field, value, addQuestions.length);
+        const validationError = await validate(field, value, addQuestions.length, repeated);
         setField("");
         return updateState({ tools: { ...props, errorMessage: { ...errorMessage, [field]: validationError } } })
     };
@@ -82,7 +90,7 @@ const Tool = (props) => {
         );
     };
 
-    const repeated = addQuestions.length && addQuestions.includes(formValue.questionField);
+    const repeated = (addQuestions.length && addQuestions.includes(formValue.questionField)) || "";
     const handlePush = () => {
         const { addQuestions } = props;
         if (formValue.questionField && !repeated) {
@@ -123,6 +131,12 @@ const Tool = (props) => {
         let multiline = false;
         if (num) {
             multiline = true;
+        }
+        const value = formValue[name];
+        const validateValues = name !== questionField && name !== information;
+        if (!value && isErrors && validateValues) {
+            error = true;
+            errorMessage[name] = `${upperCaseFirstLetter(name)} is required`;
         }
         return (
             <TextField
@@ -182,14 +196,18 @@ const Tool = (props) => {
                         "textSecondary"
                     )}
                     {renderTextField(enterYourText, questionField, handleChange, "", addQuestions.length >= 2)}
+                    {repeated && <span style={{ color: "red", fontSize: 12 }}>Questions can not be same</span>}
+                    {field === questionField && !addQuestions.length && <span style={{ color: "red", fontSize: 12 }}>Enter at least one question</span>}
                 </Grid>
                 <IconButton color="default" onClick={handlePush} disabled={addQuestions.length >= 2} >
                     <AddBoxIcon style={{ fontSize: 60, paddingTop: 20 }} />
                 </IconButton>
+
                 <ul>
                     {renderQuestions()}
                 </ul>
-                {field === questionField && !addQuestions.length && <span style={{ color: "red", fontSize: 15 }}>Enter at least one question</span>}
+
+
 
                 <RenderCheckbox renderTypography={renderTypography} {...props} />
 

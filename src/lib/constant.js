@@ -11,7 +11,7 @@ const constant = {
     NO: "no",
     YES: "yes",
     Submit: "Submit",
-    title: "title",
+    title: "tool",
     url: "url",
     description:"description",
     questionField: "questionField",

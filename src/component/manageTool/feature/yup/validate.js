@@ -4,7 +4,7 @@ import { ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchem
 const validate = async (field, value, length) => {
     let promise = "";
     switch (field) {
-        case "title":
+        case "tool":
             promise = validateValue(ToolNameSchema, { toolName: value });
             break;
         case "url":

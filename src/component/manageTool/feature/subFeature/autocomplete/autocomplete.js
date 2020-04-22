@@ -9,54 +9,59 @@ import { country } from "../../../cms";
 
 const Autocomplete = (props) => {
 
-    const { clear = false, updateState, autocompleteName, tools, subscription, autoVal = true } = props;
+    const { clear = false, updateState, autocompleteName, tools, subscription, autoVal = true, name, errorMessage } = props;
 
     const [state, setState] = useState();
 
     const handleChange = async (e, value) => {
         if (tools) {
-            updateState({ tools: { ...props, autocompleteName: value } })
+            updateState({ tools: { ...props, autocompleteName: value } });
+            if (value && !value.length) {
+                const ValidateError = await validate("country", "");
+                setState(ValidateError);
+            } else {
+                setState(false);
+            }
         }
         if (subscription) {
-            updateState({ subscription: { ...props, autocompleteName: value } })
+            updateState({ subscription: { ...props, autocompleteName: value } });
+            if (!clear && value && !value.length) {
+                const ValidateError = await validate("country", "");
+                updateState({ subscription: { ...props, autocompleteName: value, errorMessage: { ...errorMessage, "country": ValidateError } } })
+                setState(ValidateError);
+            }
+            else {
+                updateState({ subscription: { ...props, autocompleteName: value, errorMessage: { ...errorMessage, "country": "" } } })
+                setState(false);
+            }
         }
-        if (!clear && value && !value.length) {
-            const ValidateError = await validate("country", "");
-            setState(ValidateError);
-        } else {
-            setState(false);
-        }
+
+
     };
 
     const handleValue = (e, value) => {
-        updateState({ subscription: { ...props, name: value, autocompleteName: [] } })
+        updateState({ subscription: { ...props, name: value, autocompleteName: [], } })
+        setState(false);
     }
+
+    const renderAutocomplete = (value, onClick, autocompleteName, clear) => (
+        <MaterialAutocomplete
+            id="outlined"
+            multiple={value}
+            options={country}
+            getOptionLabel={(option) => option.title}
+            defaultValue={autocompleteName}
+            onChange={onClick}
+            disableClearable={clear}
+            renderInput={(params) => (
+                <TextField {...params} variant="outlined" margin="dense" placeholder="Select..." error={state} helperText={state} />
+            )}
+        />
+    );
     return (
         <>
-            {!autoVal && <MaterialAutocomplete
-                id="outlined"
-                options={country}
-                getOptionLabel={(option) => option.title}
-                defaultValue={autocompleteName}
-                onChange={handleValue}
-                disableClearable={true}
-                renderInput={(params) => (
-                    <TextField {...params} variant="outlined" margin="dense" placeholder="Select..." />
-                )}
-            />}
-            {autoVal && <MaterialAutocomplete
-                multiple
-                id="outlined-multi"
-                filterSelectedOptions
-                options={country}
-                getOptionLabel={(option) => option.title}
-                defaultValue={autocompleteName}
-                onChange={handleChange}
-                renderInput={(params) => (
-                    <TextField {...params} variant="outlined" margin="dense" placeholder="Select..." error={state}
-                        helperText={state} />
-                )}
-            />}
+            {!autoVal && renderAutocomplete(false, handleValue, name, true)}
+            {autoVal && renderAutocomplete(true, handleChange, autocompleteName, false)}
         </>
     )
 };

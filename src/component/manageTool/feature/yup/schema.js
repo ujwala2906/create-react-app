@@ -14,7 +14,7 @@ const UrlSchema = yup.object().shape({
 
 const DescriptionSchema = yup.object().shape({
     description: yup.string()
-        .required("Description Name is required")
+        .required("Description is required")
         .min(50, " Description must have at least 50 characters")
         .max(300, " Description must be at most 300 characters")
 })
@@ -39,12 +39,12 @@ const SeatsSchema = yup.object().shape({
 
 const LimitSchema = yup.object().shape({
     limit: yup.string().email("SuperUser must be a valid email")
-    .required("SuperUser must be a valid email")
+        .required("SuperUser must be a valid email")
 });
 
 const ContactSchema = yup.object().shape({
     email: yup.string().email("Contact Email is a required field")
-    .required("Contact Email is a required field")
+        .required("Contact Email is a required field")
 });
 
 const InstructionSchema = yup.object().shape({
