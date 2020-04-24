@@ -22,8 +22,8 @@ const validate = async (field, value, length) => {
         case "seats":
             promise = validateValue(SeatsSchema, { seats: value });
             break;
-        case "limit":
-            promise = validateValue(LimitSchema, { limit: value });
+        case "superUser":
+            promise = validateValue(LimitSchema, { superUser: value });
             break;
         case "emailContact":
             promise = validateValue(ContactSchema, { email: value });

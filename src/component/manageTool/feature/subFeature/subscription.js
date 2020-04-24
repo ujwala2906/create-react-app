@@ -40,7 +40,6 @@ class Subscription extends Component {
             multiple: true,
             field: "",
             clear: false,
-            value: true,
         };
     }
 
@@ -75,7 +74,7 @@ class Subscription extends Component {
     handleValidation = async (field, value) => {
         const { errorMessage, updateState } = this.props;
         const validationError = await validate(field, value, 0);
-        this.setState({ field: "", value: false })
+        this.setState({ field: ""})
         return updateState({ subscription: { ...this.props, errorMessage: { ...errorMessage, [field]: validationError } } })
     };
 
@@ -114,6 +113,7 @@ class Subscription extends Component {
             error = true;
         };
         const val = (!disable && formValue[name]) || "";
+
         return (
             <TextField
                 fullWidth
@@ -139,14 +139,14 @@ class Subscription extends Component {
             emailContact: "",
             instruction: "",
             whitelist: "",
-            limit: ""
+            superUser: ""
         };
         const errorField = {
             seats: "",
             supeUser: "",
             emailContact: "",
             whitelist: "",
-            limit: "",
+            superUser: "",
             instruction: ""
         };
         updateState({ subscription: { ...this.props, radioValue: event.target.value, showField: val, formValue: { ...formValue, ...resetFields }, errorMessage: { ...errorMessage, ...errorField } } });
@@ -175,7 +175,7 @@ class Subscription extends Component {
     );
 
     render() {
-        const { radioValue, value, updateState, countryValue, showField, disable, isErrors, formValue } = this.props;
+        const { radioValue, value, updateState, countryValue, showField, disable, isErrors, formValue, errorMessage } = this.props;
         return (
             <>
                 <Grid>
@@ -222,9 +222,9 @@ class Subscription extends Component {
                                     <Grid item xs={12}>
                                         {this.renderTypography(seats, "subtitle1", "textSecondary")}
                                         {this.renderTextField("seats", this.handleChange)}
-                                        {isErrors && !formValue.seats && this.state.value ? <span style={{ color: "red", fontSize: 12 }}>Seats is required field</span> : null }
+                                        {!errorMessage.seats && isErrors && !formValue.seats ? <span style={{ color: "red", fontSize: 12 }}>Seats is required field</span> : null}
                                         {this.renderTypography(limit, "subtitle1", "textSecondary")}
-                                        {this.renderTextField("limit", this.handleChange)}
+                                        {this.renderTextField("superUser", this.handleChange)}
                                     </Grid>
 
                                 )}
@@ -238,8 +238,10 @@ class Subscription extends Component {
                                     <Grid item xs={7}>
                                         {this.renderText(email, "checkA", "emailContact")}
                                         {this.renderTextField("emailContact", this.handleChange, !disable.checkA)}
+                                        {!errorMessage.emailContact && disable.checkA && !formValue.emailContact ? <span style={{ color: "red", fontSize: 12 }}>Contact Email is a required field</span> : null}
                                         {this.renderText(instructions, "checkB", "instruction")}
                                         {this.renderTextField("instruction", this.handleChange, !disable.checkB)}
+                                        {!errorMessage.instruction && disable.checkB && !formValue.instruction ? <span style={{ color: "red", fontSize: 12 }}>General Instruction is required</span> : null}
                                         {isErrors && !disable.checkA && !disable.checkB && <span style={{ color: "red", fontSize: 12 }}>Select at least one contact field</span>}
                                     </Grid>
                                 )}

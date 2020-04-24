@@ -86,7 +86,7 @@ export default class Tools extends Component {
           emailContact: "",
           instruction: "",
           whitelist: "",
-          limit: ""
+          superUser: ""
         },
         radioValue: "",
         errorMessage: {
@@ -143,10 +143,12 @@ export default class Tools extends Component {
     const validFields = Object.assign(tools.formValue, {
       insight: tools.isInsight,
       data: tools.isType,
-      country: tools.autocompleteName, 
+      country: tools.autocompleteName,
       country_sub: subscription.autocompleteName,
       error: subscription.errorMessage,
-      radioValue: subscription.radioValue
+      radioValue: subscription.radioValue,
+      seats_sub: subscription.formValue.seats,
+      contact: subscription.disable
     });
     for (let [key, value] of Object.entries(validFields)) {
       if ((key === "insight" || key === "data") && !value.length) {
@@ -168,15 +170,47 @@ export default class Tools extends Component {
           alertError: error,
           openAlert: true
         });
-      };
-      // if(){
-
-      // };
+      }
       if (key === "radioValue" && !value) {
         return this.setState({
           alertError: "Select at least one access type",
           openAlert: true
         });
+      }
+      if (subscription.radioValue === "limit") {
+        if (key === "seats_sub" && !value) {
+          return this.setState({
+            alertError: "seats is required field",
+            openAlert: true
+          });
+        }
+      }
+      if (subscription.radioValue === "contact") {
+        if (key === "contact" && value) {
+          const isChecked = value.checkA || value.checkB;
+          if (!isChecked) {
+            return this.setState({
+              alertError: "Select at least one contact field",
+              openAlert: true
+            });
+          }
+          if (value.checkA && !subscription.formValue.emailContact) {
+            const error = await validate(
+              "emailContact",
+              subscription.formValue.emailContact
+            );
+            return this.setState({
+              alertError: error,
+              openAlert: true
+            });
+          }
+          if (value.checkB && !subscription.formValue.instruction) {
+            return this.setState({
+              alertError: "General Instruction is required",
+              openAlert: true
+            });
+          }
+        }
       }
       if (key === "error") {
         for (let [key, val] of Object.entries(value)) {

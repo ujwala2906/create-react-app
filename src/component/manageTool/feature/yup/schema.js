@@ -38,7 +38,7 @@ const SeatsSchema = yup.object().shape({
 })
 
 const LimitSchema = yup.object().shape({
-    limit: yup.string().email("SuperUser must be a valid email")
+    superUser: yup.string().email("SuperUser must be a valid email")
         .required("SuperUser must be a valid email")
 });
 

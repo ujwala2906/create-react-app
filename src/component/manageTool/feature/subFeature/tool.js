@@ -148,8 +148,6 @@ const Tool = (props) => {
             error = true;
             errorMessage[name] = `${upperCaseFirstLetter(name)} is required`;
         };
-        
-       
         return (
             <TextField
                 name={name}
