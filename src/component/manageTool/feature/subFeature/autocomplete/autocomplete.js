@@ -9,8 +9,7 @@ import { country } from "../../../cms";
 
 const Autocomplete = (props) => {
 
-    const { clear = false, updateState, autocompleteName, tools, subscription, autoVal = true, name, errorMessage } = props;
-
+    const { isErrors, clear = false, updateState, autocompleteName, tools, subscription, autoVal = true, name, errorMessage } = props;
     const [state, setState] = useState();
 
     const handleChange = async (e, value) => {
@@ -19,7 +18,8 @@ const Autocomplete = (props) => {
             if (value && !value.length) {
                 const ValidateError = await validate("country", "");
                 setState(ValidateError);
-            } else {
+            }
+            else {
                 setState(false);
             }
         }
@@ -35,33 +35,43 @@ const Autocomplete = (props) => {
                 setState(false);
             }
         }
-
-
     };
 
     const handleValue = (e, value) => {
-        updateState({ subscription: { ...props, name: value, autocompleteName: [], } })
+        updateState({ subscription: { ...props, name: value, autocompleteName: [] } })
         setState(false);
+    };
+
+    const renderAutocomplete = (value, onClick, autocompleteName, clear, isErrors) => {
+        let errorMessage;
+        let error;
+        if ((isErrors && !autocompleteName.length) || !autocompleteName) {
+            errorMessage = "Region is Required";
+            error = true;
+        }
+        return (
+            <>
+                <MaterialAutocomplete
+                    id="outlined"
+                    multiple={value}
+                    options={country}
+                    getOptionLabel={(option) => option.title}
+                    defaultValue={autocompleteName}
+                    onChange={onClick}
+                    disableClearable={clear}
+                    renderInput={(params) => (
+                        <TextField {...params} variant="outlined" margin="dense" placeholder="Select..." error={state || error} helperText={state || errorMessage} />
+                    )}
+                />
+            </>
+
+        );
     }
 
-    const renderAutocomplete = (value, onClick, autocompleteName, clear) => (
-        <MaterialAutocomplete
-            id="outlined"
-            multiple={value}
-            options={country}
-            getOptionLabel={(option) => option.title}
-            defaultValue={autocompleteName}
-            onChange={onClick}
-            disableClearable={clear}
-            renderInput={(params) => (
-                <TextField {...params} variant="outlined" margin="dense" placeholder="Select..." error={state} helperText={state} />
-            )}
-        />
-    );
     return (
         <>
             {!autoVal && renderAutocomplete(false, handleValue, name, true)}
-            {autoVal && renderAutocomplete(true, handleChange, autocompleteName, false)}
+            {autoVal && renderAutocomplete(true, handleChange, autocompleteName, false, isErrors)}
         </>
     )
 };

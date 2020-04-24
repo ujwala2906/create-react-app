@@ -1,4 +1,4 @@
-import React from "react";
+import React , {useState} from "react";
 import { Grid, Button, IconButton, Avatar, TextField } from "@material-ui/core";
 import CloseIcon from '@material-ui/icons/Close';
 
@@ -7,8 +7,10 @@ import { toolCms, placeholder } from "../../../cms";
 import { useStyles, CloseButton } from "../style";
 
 const UploadLogo = (props) => {
-    const { img, name, showError, updateState } = props;
+    const { img, name, showError, updateState, isErrors, formValue } = props;
     const { validation } = toolCms;
+
+    const [value, setValue] = useState(false)
 
     const handleChange = event => {
         const fileData = event.target.files;
@@ -23,12 +25,13 @@ const UploadLogo = (props) => {
         reader.readAsDataURL(fileData[0]);
         reader.onloadend = () => {
             const fileName = fileData[0].name;
-            updateState({ tools: { ...props, img: reader.result, name: fileName, showError: "" } });
+            updateState({ tools: { ...props, img: reader.result, formValue: { ...formValue, name: fileName }, showError: "" } });
         };
     };
 
     const removeImage = () => {
-        updateState({ tools: { ...props, img: false, name: "" } });
+        setValue(true)
+        updateState({ tools: { ...props, img: false, formValue: { ...formValue, name: "" } } });
     };
 
 
@@ -45,6 +48,7 @@ const UploadLogo = (props) => {
                         </IconButton>
                     </div>
                 </CloseButton>
+                {isErrors && !formValue.name ? <span style={{ color: "red", fontSize: 12 }}>Logo is Required</span> : !formValue.name && value ? <span style={{ color: "red", fontSize: 12 }}>Logo is Required</span> : null}
             </Grid>
             <Grid item xs={2}>
                 <Button
@@ -67,7 +71,7 @@ const UploadLogo = (props) => {
                     margin="dense"
                     variant="outlined"
                     placeholder={placeholder.noFileChosen}
-                    value={name}
+                    value={formValue.name}
                     style={{ marginTop: 35 }}
                 />
             </Grid>

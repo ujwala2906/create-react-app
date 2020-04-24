@@ -7,7 +7,7 @@ import { toolCms } from "../../../cms";
 import { constant } from "../../../../../lib/constant";
 
 const RenderCheckbox = (props) => {
-    const { renderTypography, isInsight, isType, updateState, isChecked } = props;
+    const { renderTypography, isInsight, isType, updateState, isChecked, isErrors } = props;
     const { insight, insightArray, typeArray, type, insightType, dataType, } = toolCms;
     const { insightData, typeData } = constant;
     const [error, setError] = useState({ insightErr: { message: "", isTrue: false }, typeErr: { message: "", isTrue: false } })
@@ -49,15 +49,13 @@ const RenderCheckbox = (props) => {
         return updateState({ tools: { ...props, isType: [...isType, fieldSelected] } });
     };
 
-    const renderCheckBox = (label, filedName) => {
-        return (
-            <>
-                {label.map((item, index) => {
-                    const isChecked = (filedName === insightData && isInsight.includes(item)) || isType.includes(item);
-                    return <FormControlLabel key={index} control={<Checkbox onChange={handleCheck} name={item} id={filedName} checked={isChecked} />} label={item} />
-                })}
-            </>)
-    };
+    const renderCheckBox = (label, filedName) => (
+        <>
+            {label.map((item, index) => {
+                const isChecked = (filedName === insightData && isInsight.includes(item)) || isType.includes(item);
+                return <FormControlLabel key={index} control={<Checkbox onChange={handleCheck} name={item} id={filedName} checked={isChecked} />} label={item} />
+            })}
+        </>)
 
     return (
         <>
@@ -70,7 +68,7 @@ const RenderCheckbox = (props) => {
                 <FormGroup row>
                     {renderCheckBox(insightArray, insightData)}
                 </FormGroup>
-                {<span style={{ color: "red", fontSize: 15 }}>{error.insightErr && error.insightErr.message}</span>}
+                {isErrors && !isInsight.length ? <span style={{ color: "red", fontSize: 15 }}>{insightType}</span> : !isInsight.length ? <span style={{ color: "red", fontSize: 15 }}>{error.insightErr && error.insightErr.message}</span> : null}
             </Grid>
 
             <Grid item xs={12}>
@@ -82,7 +80,7 @@ const RenderCheckbox = (props) => {
                 <FormGroup row>
                     {renderCheckBox(typeArray, typeData)}
                 </FormGroup>
-                {<span style={{ color: "red", fontSize: 15 }}>{error.typeErr && error.typeErr.message}</span>}
+                {isErrors && !isType.length ? <span style={{ color: "red", fontSize: 15 }}>{dataType}</span> : !isType.length ? <span style={{ color: "red", fontSize: 15 }}>{error.typeErr && error.typeErr.message}</span> : null}
             </Grid>
         </>
     )

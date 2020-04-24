@@ -42,12 +42,13 @@ export default class Tools extends Component {
         },
         formValue: {
           tool: "",
+          name: "",
           url: "",
           description: "",
-          questionField: ""
+          questionField: "",
+          email: ""
         },
         img: "",
-        name: "",
         showError: "",
         isInsight: [],
         isType: [],
@@ -68,6 +69,7 @@ export default class Tools extends Component {
         autocompleteName: []
       },
       subscription: {
+        isErrors: false,
         autoVal: true,
         value: constant.YES,
         countryValue: constant.YES,
@@ -139,9 +141,43 @@ export default class Tools extends Component {
   checkValidation = async () => {
     const { tools, subscription } = this.state;
     const validFields = Object.assign(tools.formValue, {
-      error: subscription.errorMessage
+      insight: tools.isInsight,
+      data: tools.isType,
+      country: tools.autocompleteName, 
+      country_sub: subscription.autocompleteName,
+      error: subscription.errorMessage,
+      radioValue: subscription.radioValue
     });
     for (let [key, value] of Object.entries(validFields)) {
+      if ((key === "insight" || key === "data") && !value.length) {
+        return this.setState({
+          alertError: `Select at least one ${key} type`,
+          openAlert: true
+        });
+      }
+      if (key === "country" && !value.length) {
+        const error = await validate(key, value);
+        return this.setState({
+          alertError: error,
+          openAlert: true
+        });
+      }
+      if (key === "country_sub" && !value.length) {
+        const error = await validate("country", value);
+        return this.setState({
+          alertError: error,
+          openAlert: true
+        });
+      };
+      // if(){
+
+      // };
+      if (key === "radioValue" && !value) {
+        return this.setState({
+          alertError: "Select at least one access type",
+          openAlert: true
+        });
+      }
       if (key === "error") {
         for (let [key, val] of Object.entries(value)) {
           if ((key === "country" || key === "instruction") && val) {
@@ -163,16 +199,41 @@ export default class Tools extends Component {
       }
       const error = await validate(key, value, tools.addQuestions.length);
       if (!value) {
-        this.setState({ tools: { ...this.state.tools, isErrors: true } });
+        this.setState({
+          tools: { ...this.state.tools, isErrors: true },
+          subscription: { ...this.state.subscription, isErrors: true }
+        });
       }
-      if (error && key !== "description") {
+      if (error && key !== "email") {
         return this.setState({
           alertError: error,
           openAlert: true
         });
       }
     }
-    return console.log(this.state);
+    const {
+      formValue,
+      addQuestions,
+      isInsight,
+      isType,
+      autocompleteName,
+      screenshotName
+    } = tools;
+    return console.log(
+      formValue,
+      addQuestions,
+      isInsight,
+      isType,
+      autocompleteName,
+      screenshotName,
+      "subscription: ",
+      subscription.formValue,
+      subscription.name,
+      subscription.autocompleteName,
+      subscription.radioValue,
+      subscription.value,
+      subscription.countryValue
+    );
   };
 
   render() {

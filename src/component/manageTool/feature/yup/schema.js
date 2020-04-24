@@ -55,6 +55,10 @@ const QuestionSchema = yup.object().shape({
     question: yup.string().required("Enter at least one question")
 });
 
+const NameSchema = yup.object().shape({
+    name: yup.string().required("Logo is Required")
+});
+
 const EmptySchema = yup.object().shape();
 
-export { QuestionSchema, ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, LimitSchema, ContactSchema, InstructionSchema, EmptySchema };
+export { NameSchema, QuestionSchema, ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, LimitSchema, ContactSchema, InstructionSchema, EmptySchema };

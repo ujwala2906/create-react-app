@@ -40,6 +40,7 @@ class Subscription extends Component {
             multiple: true,
             field: "",
             clear: false,
+            value: true,
         };
     }
 
@@ -49,7 +50,7 @@ class Subscription extends Component {
         const val = event.target.value;
         updateState({ subscription: { ...this.props, value: val } });
         if (val === constant.NO) {
-            updateState({ subscription: { ...this.props, multiple: false, clear: true, value: val, autoVal: false} });
+            updateState({ subscription: { ...this.props, multiple: false, clear: true, value: val, autoVal: false } });
         }
         else {
             updateState({ subscription: { ...this.props, multiple: true, clear: false, value: val, autoVal: true } });
@@ -74,7 +75,7 @@ class Subscription extends Component {
     handleValidation = async (field, value) => {
         const { errorMessage, updateState } = this.props;
         const validationError = await validate(field, value, 0);
-        this.setState({ field: "" })
+        this.setState({ field: "", value: false })
         return updateState({ subscription: { ...this.props, errorMessage: { ...errorMessage, [field]: validationError } } })
     };
 
@@ -174,7 +175,7 @@ class Subscription extends Component {
     );
 
     render() {
-        const { radioValue, value, updateState, countryValue, showField, disable } = this.props;
+        const { radioValue, value, updateState, countryValue, showField, disable, isErrors, formValue } = this.props;
         return (
             <>
                 <Grid>
@@ -196,6 +197,7 @@ class Subscription extends Component {
                             {...this.props}
                             updateState={updateState}
                             subscription={true}
+                            isErrors={isErrors}
                         />
                     </Grid>
 
@@ -220,20 +222,25 @@ class Subscription extends Component {
                                     <Grid item xs={12}>
                                         {this.renderTypography(seats, "subtitle1", "textSecondary")}
                                         {this.renderTextField("seats", this.handleChange)}
+                                        {isErrors && !formValue.seats && this.state.value ? <span style={{ color: "red", fontSize: 12 }}>Seats is required field</span> : null }
                                         {this.renderTypography(limit, "subtitle1", "textSecondary")}
                                         {this.renderTextField("limit", this.handleChange)}
                                     </Grid>
+
                                 )}
+
                                 {this.renderRadio(
                                     accessTypeArray[1].key,
                                     accessTypeArray[1].title,
                                 )}
+
                                 {showField === "contact" && (
                                     <Grid item xs={7}>
                                         {this.renderText(email, "checkA", "emailContact")}
                                         {this.renderTextField("emailContact", this.handleChange, !disable.checkA)}
                                         {this.renderText(instructions, "checkB", "instruction")}
                                         {this.renderTextField("instruction", this.handleChange, !disable.checkB)}
+                                        {isErrors && !disable.checkA && !disable.checkB && <span style={{ color: "red", fontSize: 12 }}>Select at least one contact field</span>}
                                     </Grid>
                                 )}
                                 {this.renderRadio(
@@ -255,6 +262,7 @@ class Subscription extends Component {
                                     accessTypeArray[4].title,
                                 )}
                             </RadioGroup>
+                            {isErrors && !radioValue && <span style={{ color: "red", fontSize: 12 }}>Select at least one access type</span>}
                         </FormControl>
                     </Grid>
                     <br />

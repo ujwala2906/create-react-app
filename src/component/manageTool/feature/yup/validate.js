@@ -1,5 +1,5 @@
 import { validateValue, handlePromiseError } from "../../../../lib/helper";
-import { ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, EmptySchema, QuestionSchema, LimitSchema, ContactSchema, InstructionSchema } from "./schema";
+import { NameSchema, ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, EmptySchema, QuestionSchema, LimitSchema, ContactSchema, InstructionSchema } from "./schema";
 
 const validate = async (field, value, length) => {
     let promise = "";
@@ -33,6 +33,9 @@ const validate = async (field, value, length) => {
             break;
         case "instruction":
             promise = validateValue(InstructionSchema, { instruction: value });
+            break;
+        case "name":
+            promise = validateValue(NameSchema, { name: value });
             break;
         case "questionField":
             if (!length) {

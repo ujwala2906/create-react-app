@@ -37,21 +37,21 @@ const UploadScreenShot = (props) => {
             multiple[keyIndex] = reader.result;
             screenshotName[keyIndex] = fileName;
             if (multiple.length === 6 && currentImg + 1 === 6) {
-                return updateState({ tools: { ...props, currentImg: 0, multiple: [...multiple], showError: "", screenshotName: screenshotName } });
+                return updateState({ tools: { ...props, currentImg: 0, multiple: multiple, showError: "", screenshotName: screenshotName, val: screenshotName[0] } });
             }
-            return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: [...multiple], showError: "", screenshotName: screenshotName } });
+            return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: multiple, showError: "", screenshotName: screenshotName } });
         }
         event.target.value = "";
     };
 
     const removeImage = (index) => {
-        multiple.splice(index, 1);
-        screenshotName.splice(index, 1);
-        updateState({ tools: { ...props, multiple: [...multiple], currentImg: index, val: "", screenshotName: screenshotName } })
-    }
+        multiple[index] = null;
+        screenshotName[index] = "";
+        updateState({ tools: { ...props, multiple: multiple, currentImg: index, val: "", screenshotName: screenshotName } })
+    };
 
     const ChangeImage = (value, index) => {
-        updateState({ tools: { ...props, val: value, currentImg: index } })
+        updateState({ tools: { ...props, val: value, currentImg: index, showError: "" } })
     };
 
     return (
@@ -66,7 +66,7 @@ const UploadScreenShot = (props) => {
                 <FormGroup row>
                     {[0, 1, 2, 3, 4, 5].map((_, index) => (
                         <CloseButton key={index}>
-                            <div className="container" >
+                            <div className="container">
                                 <IconButton aria-label="replace" onClick={() => ChangeImage(screenshotName[index], index)}>
                                     <Avatar src={multiple[index]} className={classes.large} variant="square" style={currentImg === index ? activeStyle : { margin: 5 }} />
                                 </IconButton>
@@ -99,7 +99,7 @@ const UploadScreenShot = (props) => {
                     fullWidth
                     margin="dense"
                     variant="outlined"
-                    placeholder={placeholder.enterYourText}
+                    placeholder={placeholder.noFileChosen}
                     value={val}
                 />
             </Grid>

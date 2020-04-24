@@ -54,6 +54,7 @@ const Tool = (props) => {
     const { searchTool, enterYourText } = placeholder;
 
     const [field, setField] = useState("");
+    const [repeat, setRepeat] = useState(false)
 
     const handleChange = (event) => {
         const fieldName = event.target.name;
@@ -64,7 +65,7 @@ const Tool = (props) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
     const handleValidation = async (field, value) => {
-        const validationError = await validate(field, value, addQuestions.length, repeated);
+        const validationError = await validate(field, value, addQuestions.length);
         setField("");
         return updateState({ tools: { ...props, errorMessage: { ...errorMessage, [field]: validationError } } })
     };
@@ -93,14 +94,22 @@ const Tool = (props) => {
     const repeated = (addQuestions.length && addQuestions.includes(formValue.questionField)) || "";
     const handlePush = () => {
         const { addQuestions } = props;
+        if (repeated) {
+            setRepeat(true)
+        }
         if (formValue.questionField && !repeated) {
+            setRepeat(false)
             updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { ...formValue, questionField: "" } } })
         }
     };
 
     const keyPress = (e) => {
         if (e.keyCode === 13) {
+            if (repeated) {
+                setRepeat(true)
+            }
             if (formValue.questionField && !repeated) {
+                setRepeat(false)
                 updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { ...formValue, questionField: "" } } })
             }
         };
@@ -133,11 +142,14 @@ const Tool = (props) => {
             multiline = true;
         }
         const value = formValue[name];
-        const validateValues = name !== questionField && name !== information;
+        
+        const validateValues = name !== questionField && name !== email;
         if (!value && isErrors && validateValues) {
             error = true;
             errorMessage[name] = `${upperCaseFirstLetter(name)} is required`;
-        }
+        };
+        
+       
         return (
             <TextField
                 name={name}
@@ -177,7 +189,7 @@ const Tool = (props) => {
 
             <Grid container spacing={3} >
 
-                <UploadLogo {...props} />
+                <UploadLogo {...props} isErrors={isErrors} />
 
                 <Grid item xs={12}>
                     {renderTypography(websiteUrl, "subtitle1", "textSecondary")}
@@ -196,8 +208,8 @@ const Tool = (props) => {
                         "textSecondary"
                     )}
                     {renderTextField(enterYourText, questionField, handleChange, "", addQuestions.length >= 2)}
-                    {repeated && <span style={{ color: "red", fontSize: 12 }}>Questions can not be same</span>}
-                    {field === questionField && !addQuestions.length && <span style={{ color: "red", fontSize: 12 }}>Enter at least one question</span>}
+                    {repeat && <span style={{ color: "red", fontSize: 12 }}>Questions can not be same</span>}
+                    {isErrors && !addQuestions.length ? <span style={{ color: "red", fontSize: 12 }}>Enter at least one question</span>: null}
                 </Grid>
                 <IconButton color="default" onClick={handlePush} disabled={addQuestions.length >= 2} >
                     <AddBoxIcon style={{ fontSize: 60, paddingTop: 20 }} />
@@ -209,7 +221,7 @@ const Tool = (props) => {
 
 
 
-                <RenderCheckbox renderTypography={renderTypography} {...props} />
+                <RenderCheckbox renderTypography={renderTypography} {...props} isErrors={isErrors} />
 
                 <UploadScreenShot renderTypography={renderTypography} renderTextField={renderTextField} {...props} />
 
@@ -230,7 +242,7 @@ const Tool = (props) => {
                         </RadioGroup>
                     </FormControl>
 
-                    {value === selectRegion && <Autocomplete clear={false} {...props} updateState={updateState} tools={true} />}
+                    {value === selectRegion && <Autocomplete clear={false} {...props} updateState={updateState} tools={true} isErrors={isErrors} />}
 
                 </Grid>
 
