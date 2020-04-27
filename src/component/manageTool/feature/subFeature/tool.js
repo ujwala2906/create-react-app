@@ -217,8 +217,6 @@ const Tool = (props) => {
                     {renderQuestions()}
                 </ul>
 
-
-
                 <RenderCheckbox renderTypography={renderTypography} {...props} isErrors={isErrors} />
 
                 <UploadScreenShot renderTypography={renderTypography} renderTextField={renderTextField} {...props} />

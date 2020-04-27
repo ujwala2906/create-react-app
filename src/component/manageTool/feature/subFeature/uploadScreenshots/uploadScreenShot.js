@@ -39,7 +39,7 @@ const UploadScreenShot = (props) => {
             if (multiple.length === 6 && currentImg + 1 === 6) {
                 return updateState({ tools: { ...props, currentImg: 0, multiple: multiple, showError: "", screenshotName: screenshotName, val: screenshotName[0] } });
             }
-            return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: multiple, showError: "", screenshotName: screenshotName } });
+            return updateState({ tools: { ...props, currentImg: keyIndex + 1, multiple: multiple, showError: "", screenshotName: screenshotName, val: screenshotName[keyIndex+1] } });
         }
         event.target.value = "";
     };

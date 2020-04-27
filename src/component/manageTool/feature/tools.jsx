@@ -70,6 +70,7 @@ export default class Tools extends Component {
       },
       subscription: {
         isErrors: false,
+        clearError: true,
         autoVal: true,
         value: constant.YES,
         countryValue: constant.YES,
@@ -140,11 +141,15 @@ export default class Tools extends Component {
 
   checkValidation = async () => {
     const { tools, subscription } = this.state;
+    const countrySelection =
+      subscription.value === constant.YES
+        ? subscription.autocompleteName
+        : subscription.name;
     const validFields = Object.assign(tools.formValue, {
       insight: tools.isInsight,
       data: tools.isType,
       country: tools.autocompleteName,
-      country_sub: subscription.autocompleteName,
+      countrySub: countrySelection,
       error: subscription.errorMessage,
       radioValue: subscription.radioValue,
       seats_sub: subscription.formValue.seats,
@@ -164,7 +169,7 @@ export default class Tools extends Component {
           openAlert: true
         });
       }
-      if (key === "country_sub" && !value.length) {
+      if (key === "countrySub" && !(value.length || value)) {
         const error = await validate("country", value);
         return this.setState({
           alertError: error,
@@ -177,11 +182,14 @@ export default class Tools extends Component {
           openAlert: true
         });
       }
+
+      //access validation
       if (subscription.radioValue === "limit") {
         if (key === "seats_sub" && !value) {
           return this.setState({
             alertError: "seats is required field",
-            openAlert: true
+            openAlert: true,
+            subscription: { ...this.state.subscription, clearError: true }
           });
         }
       }
@@ -191,7 +199,8 @@ export default class Tools extends Component {
           if (!isChecked) {
             return this.setState({
               alertError: "Select at least one contact field",
-              openAlert: true
+              openAlert: true,
+              subscription: { ...this.state.subscription, clearError: true }
             });
           }
           if (value.checkA && !subscription.formValue.emailContact) {
@@ -201,17 +210,20 @@ export default class Tools extends Component {
             );
             return this.setState({
               alertError: error,
-              openAlert: true
+              openAlert: true,
+              subscription: { ...this.state.subscription, clearError: true }
             });
           }
           if (value.checkB && !subscription.formValue.instruction) {
             return this.setState({
               alertError: "General Instruction is required",
-              openAlert: true
+              openAlert: true,
+              subscription: { ...this.state.subscription, clearError: true }
             });
           }
         }
       }
+
       if (key === "error") {
         for (let [key, val] of Object.entries(value)) {
           if ((key === "country" || key === "instruction") && val) {
