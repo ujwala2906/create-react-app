@@ -11,6 +11,7 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 
 import { Tool, Subscription } from "./subFeature";
+import { dataCollection } from "../../table";
 
 import { constant } from "../../../lib/constant";
 
@@ -19,6 +20,7 @@ import validate from "./yup";
 const Alert = props => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
+
 export default class Tools extends Component {
   constructor(props) {
     super(props);
@@ -265,6 +267,21 @@ export default class Tools extends Component {
       autocompleteName,
       screenshotName
     } = tools;
+    const data = {
+      tools: {
+        formValue: {
+          tool: formValue.tool,
+          email: formValue.email
+        }
+      },
+      subscription: {
+        formValue: {
+          notes: subscription.formValue.notes
+        }
+      }
+    };
+
+    dataCollection.push(data);
     return console.log(
       formValue,
       addQuestions,
