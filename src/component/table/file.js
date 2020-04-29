@@ -1,18 +1,10 @@
-const dataCollection = [
+const rows = [
     {
-        tools: {
-            formValue: {
-                tool: "test789",
-                email: "test@test.test"
-            },
-        },
-        subscription: {
-            formValue: {
-                notes: "good",
-            },
-        },
+        tool: "test123",
+        email: "test@test.test",
+        notes: "good",
     },
 ]
-export default dataCollection;
+export default rows;
 
 

@@ -238,7 +238,7 @@ const Tool = (props) => {
                         </RadioGroup>
                     </FormControl>
 
-                    {value === selectRegion && <Autocomplete clear={false} {...props} updateState={updateState} tools={true} isErrors={isErrors} />}
+                    {value === selectRegion && <Autocomplete clear={false} {...props} updateState={updateState} tools={true} isErrors={isErrors} globalValue={value}/>}
 
                 </Grid>
 

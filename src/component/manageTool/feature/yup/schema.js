@@ -25,11 +25,6 @@ const EmailSchema = yup.object().shape({
         .matches(emailRegex, "Enter a valid email")
 })
 
-const CountrySchema = yup.object().shape({
-    country: yup.string()
-        .required("Region is required")
-})
-
 const SeatsSchema = yup.object().shape({
     seats: yup.number()
         .positive()
@@ -52,7 +47,7 @@ const InstructionSchema = yup.object().shape({
 });
 
 const QuestionSchema = yup.object().shape({
-    question: yup.string().required("Enter at least one question")
+    question: yup.string().required("Enter at least one question").max(200, "Question must be at most 200 characters")
 });
 
 const NameSchema = yup.object().shape({
@@ -61,4 +56,4 @@ const NameSchema = yup.object().shape({
 
 const EmptySchema = yup.object().shape();
 
-export { NameSchema, QuestionSchema, ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, CountrySchema, SeatsSchema, LimitSchema, ContactSchema, InstructionSchema, EmptySchema };
+export { NameSchema, QuestionSchema, ToolNameSchema, UrlSchema, DescriptionSchema, EmailSchema, SeatsSchema, LimitSchema, ContactSchema, InstructionSchema, EmptySchema };

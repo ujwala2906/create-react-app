@@ -1,4 +1,4 @@
 import Table from "./table";
-import dataCollection from "./file"
+import rows from "./file"
 
-export { Table, dataCollection };
+export { Table, rows };

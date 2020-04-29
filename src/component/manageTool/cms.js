@@ -78,6 +78,12 @@ const validation = {
     description: "Description Name is required",
     minLength: " Description must have at least 50 characters",
     maxLength: "Description must be at most 300 characters",
+    region:"Region is Required",
+    accessType:"Select at least one access type",
+    seat: "seats is required field",
+    contactField: "Select at least one contact field",
+    instruction:"General Instruction is required",
+    submission: "Your Submission has been Received",
 }
 
 const country = [

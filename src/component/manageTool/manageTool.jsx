@@ -24,6 +24,7 @@ const ManageTool = props => {
         </Button>
         <br />
       </Link>
+      <br />
       <Table />
     </>
   );

@@ -1,21 +1,25 @@
 import React from "react";
-import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
-import TableCell from "@material-ui/core/TableCell";
-import TableContainer from "@material-ui/core/TableContainer";
-import TablePagination from "@material-ui/core/TablePagination";
-import TableRow from "@material-ui/core/TableRow";
-import Paper from "@material-ui/core/Paper";
-import Button from "@material-ui/core/Button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableFooter,
+  TablePagination,
+  TableRow,
+  Paper,
+  Button,
+} from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
+import CheckCircleIcon from "@material-ui/icons/CheckCircle";
 
-import { EnhancedTableHead, EnhancedTableToolbar } from "./subFeatures";
+import rows from "./file";
 
 import { useStyles } from "./style";
 
-import dataCollection from "./file";
+import { EnhancedTableHead, EnhancedTableToolbar } from "./subFeatures";
 
-const EnhancedTable = () => {
+const CustomTable = () => {
   const classes = useStyles();
   const [page, setPage] = React.useState(0);
   const [rowsPerPage, setRowsPerPage] = React.useState(5);
@@ -29,69 +33,63 @@ const EnhancedTable = () => {
     setPage(0);
   };
 
-
-
   return (
-    <div className={classes.root}>
-      <Paper className={classes.paper}>
-        <EnhancedTableToolbar />
-        <TableContainer>
-          <Table
-            className={classes.table}
-            aria-labelledby="tableTitle"
-            aria-label="enhanced table"
-          >
-            <EnhancedTableHead rowCount={dataCollection.length} />
-            <TableBody>
-              {dataCollection
-                .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                .map((row, index) => {
-                  const labelId = `enhanced-table-checkbox-${index}`;
-                  return (
-                    <TableRow
-                      role="checkbox"
-                      tabIndex={-1}
-                      key={dataCollection[index]}
-                    >
-                      <TableCell component="th" id={labelId} scope="row">
-                        {dataCollection[index].tools.formValue.tool}
-                      </TableCell>
-                      <TableCell align="right">
-                        {dataCollection[index].tools.formValue.email}
-                      </TableCell>
-                      <TableCell align="right">
-                        {dataCollection[index].subscription.formValue.notes}
-                      </TableCell>
-                      <TableCell align="right">Published</TableCell>
-                      <TableCell align="right">
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          size="small"
-                          style={{ borderRadius: 20 }}
-                        >
-                          <EditIcon fontSize="small"  style={{ padding: 2 }}/>
-                          Edit Tool
-                        </Button>
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
-             
-            </TableBody>
-          </Table>
-        </TableContainer>
-        <TablePagination
-          rowsPerPageOptions={[5, 10, 25]}
-          component="div"
-          count={dataCollection.length}
-          rowsPerPage={rowsPerPage}
-          page={page}
-          onChangePage={handleChangePage}
-          onChangeRowsPerPage={handleChangeRowsPerPage}
-        />
-      </Paper>
-    </div>
+    <TableContainer component={Paper}>
+     
+      <EnhancedTableToolbar />
+      <Table className={classes.table}>
+        <EnhancedTableHead rowCount={rows.length} />
+        <TableBody>
+          {(rowsPerPage > 0
+            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+            : rows
+          ).map(row => (
+            <TableRow key={row.tool}>
+              <TableCell component="th" scope="row">
+                {row.tool}
+              </TableCell>
+              <TableCell align="right">{row.email}</TableCell>
+              <TableCell align="right">{row.notes}</TableCell>
+              <TableCell align="right">
+                <CheckCircleIcon
+                  fontSize="small"
+                  style={{ color: "green", paddingTop: 6 }}
+                />
+                Published
+              </TableCell>
+              <TableCell align="right">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  size="small"
+                  style={{ borderRadius: 20 }}
+                >
+                  <EditIcon fontSize="small" style={{ padding: 2 }} />
+                  Edit Tool
+                </Button>
+              </TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+        <TableFooter>
+          <TableRow>
+            <TablePagination
+              rowsPerPageOptions={[5, 10, 25]}
+              colSpan={3}
+              count={rows.length}
+              rowsPerPage={rowsPerPage}
+              page={page}
+              SelectProps={{
+                inputProps: { "aria-label": "rows per page" },
+                native: true
+              }}
+              onChangePage={handleChangePage}
+              onChangeRowsPerPage={handleChangeRowsPerPage}
+            />
+          </TableRow>
+        </TableFooter>
+      </Table>
+    </TableContainer>
   );
 };
-export default EnhancedTable;
+export default CustomTable;
