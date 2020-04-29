@@ -91,19 +91,15 @@ class Endorsement extends React.Component {
     if (index >= 0) {
       endorsement.splice(index, 1);
       newArray.splice(newArrayIndex, 1);
-
       if (newArray.length === 0) {
         let initialValue = initial;
         this.setState({ initial: --initialValue });
         let parent = endorsement;
         let child = parent;
-
         let parentLength = parent.length;
-
         if (parent.length >= perPage && initial !== 1) {
           child = parent.slice(parentLength - perPage, parentLength);
         }
-
         return this.setState({
           endorsement: [...endorsement],
           newArray: [...child]
