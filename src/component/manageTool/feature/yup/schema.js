@@ -47,7 +47,8 @@ const InstructionSchema = yup.object().shape({
 });
 
 const QuestionSchema = yup.object().shape({
-    question: yup.string().required("Enter at least one question").max(200, "Question must be at most 200 characters")
+    question: yup.string().required("Enter at least one question")
+    .max(200, "Question must be at most 200 characters")
 });
 
 const NameSchema = yup.object().shape({

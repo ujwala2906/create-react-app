@@ -97,7 +97,7 @@ const Tool = (props) => {
         if (repeated) {
             setRepeat(true)
         }
-        if (formValue.questionField && !repeated) {
+        if (formValue.questionField && !repeated && !errorMessage[questionField]) {
             setRepeat(false)
             updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { ...formValue, questionField: "" } } })
         }
@@ -108,7 +108,7 @@ const Tool = (props) => {
             if (repeated) {
                 setRepeat(true)
             }
-            if (formValue.questionField && !repeated) {
+            if (formValue.questionField && !repeated && !errorMessage[questionField]) {
                 setRepeat(false)
                 updateState({ tools: { ...props, addQuestions: [...addQuestions, formValue.questionField], formValue: { ...formValue, questionField: "" } } })
             }
@@ -127,7 +127,7 @@ const Tool = (props) => {
     const renderQuestions = () => (
         <>
             {addQuestions.map((item, index) => (
-                <li><Chip label={item} key={index} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
+                <li><Chip label={item} key={`${item}${index}`} variant="outlined" size="small" onDelete={() => handleDelete(index)} /></li>
             ))}
         </>
     );
@@ -148,6 +148,7 @@ const Tool = (props) => {
             error = true;
             errorMessage[name] = `${upperCaseFirstLetter(name)} is required`;
         };
+       
         return (
             <TextField
                 name={name}

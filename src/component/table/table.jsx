@@ -8,7 +8,7 @@ import {
   TablePagination,
   TableRow,
   Paper,
-  Button,
+  Button
 } from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import CheckCircleIcon from "@material-ui/icons/CheckCircle";
@@ -33,9 +33,18 @@ const CustomTable = () => {
     setPage(0);
   };
 
+  const tableCell = row => {
+    return Object.keys(row).map((key, index) => {
+      return (
+        <TableCell component="th" scope="row" key={index}>
+          {row[key]}
+        </TableCell>
+      );
+    });
+  };
+
   return (
     <TableContainer component={Paper}>
-     
       <EnhancedTableToolbar />
       <Table className={classes.table}>
         <EnhancedTableHead rowCount={rows.length} />
@@ -45,11 +54,7 @@ const CustomTable = () => {
             : rows
           ).map(row => (
             <TableRow key={row.tool}>
-              <TableCell component="th" scope="row">
-                {row.tool}
-              </TableCell>
-              <TableCell align="right">{row.email}</TableCell>
-              <TableCell align="right">{row.notes}</TableCell>
+              {tableCell(row)}
               <TableCell align="right">
                 <CheckCircleIcon
                   fontSize="small"
