@@ -5,13 +5,15 @@ import AddIcon from "@material-ui/icons/Add";
 
 import { manageToolCms } from "./cms";
 
+import { Table } from "../index";
+
 const ManageTool = props => {
   const { match } = props;
   const { path } = match;
-  
+
   return (
     <>
-      <Link to={`${path}/add-tool`}  style={{ textDecoration: 'none' }}>
+      <Link to={`${path}/add-tool`} style={{ textDecoration: "none" }}>
         <Button
           variant="contained"
           color="primary"
@@ -20,7 +22,10 @@ const ManageTool = props => {
         >
           {manageToolCms.addNewTool}
         </Button>
+        <br />
       </Link>
+      <br />
+      <Table />
     </>
   );
 };

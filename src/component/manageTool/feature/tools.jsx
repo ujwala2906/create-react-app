@@ -11,14 +11,17 @@ import {
 import MuiAlert from "@material-ui/lab/Alert";
 
 import { Tool, Subscription } from "./subFeature";
+import { rows } from "../../table";
 
 import { constant } from "../../../lib/constant";
+import { validation } from "../cms";
 
 import validate from "./yup";
 
 const Alert = props => {
   return <MuiAlert elevation={6} variant="filled" {...props} />;
 };
+
 export default class Tools extends Component {
   constructor(props) {
     super(props);
@@ -27,6 +30,7 @@ export default class Tools extends Component {
       openAlert: false,
       button: true,
       stage: false,
+      severity: "",
       tools: {
         isErrors: false,
         isChecked: false,
@@ -140,11 +144,14 @@ export default class Tools extends Component {
   handleAlert = () => this.setState({ openAlert: !this.state.openAlert });
 
   checkValidation = async () => {
+    const { history } = this.props;
+
     const { tools, subscription } = this.state;
     const countrySelection =
       subscription.value === constant.YES
         ? subscription.autocompleteName
         : subscription.name;
+
     const validFields = Object.assign(tools.formValue, {
       insight: tools.isInsight,
       data: tools.isType,
@@ -159,27 +166,33 @@ export default class Tools extends Component {
       if ((key === "insight" || key === "data") && !value.length) {
         return this.setState({
           alertError: `Select at least one ${key} type`,
-          openAlert: true
+          openAlert: true,
+          severity: "error"
         });
       }
-      if (key === "country" && !value.length) {
-        const error = await validate(key, value);
+      if (
+        key === "country" &&
+        !value.length &&
+        tools.value === constant.selectRegion
+      ) {
         return this.setState({
-          alertError: error,
-          openAlert: true
+          alertError: validation.region,
+          openAlert: true,
+          severity: "error"
         });
       }
-      if (key === "countrySub" && !(value.length || value)) {
-        const error = await validate("country", value);
+      if (key === "countrySub" && (!value || !value.length)) {
         return this.setState({
-          alertError: error,
-          openAlert: true
+          alertError: validation.region,
+          openAlert: true,
+          severity: "error"
         });
       }
       if (key === "radioValue" && !value) {
         return this.setState({
-          alertError: "Select at least one access type",
-          openAlert: true
+          alertError: validation.accessType,
+          openAlert: true,
+          severity: "error"
         });
       }
 
@@ -187,8 +200,9 @@ export default class Tools extends Component {
       if (subscription.radioValue === "limit") {
         if (key === "seats_sub" && !value) {
           return this.setState({
-            alertError: "seats is required field",
+            alertError: validation.seat,
             openAlert: true,
+            severity: "error",
             subscription: { ...this.state.subscription, clearError: true }
           });
         }
@@ -198,8 +212,9 @@ export default class Tools extends Component {
           const isChecked = value.checkA || value.checkB;
           if (!isChecked) {
             return this.setState({
-              alertError: "Select at least one contact field",
+              alertError: validation.contactField,
               openAlert: true,
+              severity: "error",
               subscription: { ...this.state.subscription, clearError: true }
             });
           }
@@ -211,13 +226,15 @@ export default class Tools extends Component {
             return this.setState({
               alertError: error,
               openAlert: true,
+              severity: "error",
               subscription: { ...this.state.subscription, clearError: true }
             });
           }
           if (value.checkB && !subscription.formValue.instruction) {
             return this.setState({
-              alertError: "General Instruction is required",
+              alertError: validation.instruction,
               openAlert: true,
+              severity: "error",
               subscription: { ...this.state.subscription, clearError: true }
             });
           }
@@ -229,7 +246,8 @@ export default class Tools extends Component {
           if ((key === "country" || key === "instruction") && val) {
             return this.setState({
               alertError: val,
-              openAlert: true
+              openAlert: true,
+              severity: "error"
             });
           }
           if (val) {
@@ -237,12 +255,14 @@ export default class Tools extends Component {
             if (error) {
               return this.setState({
                 alertError: error,
-                openAlert: true
+                openAlert: true,
+                severity: "error"
               });
             }
           }
         }
       }
+
       const error = await validate(key, value, tools.addQuestions.length);
       if (!value) {
         this.setState({
@@ -253,10 +273,12 @@ export default class Tools extends Component {
       if (error && key !== "email") {
         return this.setState({
           alertError: error,
-          openAlert: true
+          openAlert: true,
+          severity: "error"
         });
       }
     }
+
     const {
       formValue,
       addQuestions,
@@ -265,7 +287,21 @@ export default class Tools extends Component {
       autocompleteName,
       screenshotName
     } = tools;
-    return console.log(
+
+    const data = {
+      tool: formValue.tool,
+      email: formValue.email,
+      notes: subscription.formValue.notes
+    };
+
+    rows.push(data);
+
+    this.setState({
+      alertError: validation.submission,
+      openAlert: true,
+      severity: "success"
+    });
+    console.log(
       formValue,
       addQuestions,
       isInsight,
@@ -280,6 +316,7 @@ export default class Tools extends Component {
       subscription.value,
       subscription.countryValue
     );
+    return history.push("/manage-tool");
   };
 
   render() {
@@ -290,7 +327,7 @@ export default class Tools extends Component {
           autoHideDuration={1000}
           onClose={this.handleAlert}
         >
-          <Alert onClose={this.handleAlert} severity="error">
+          <Alert onClose={this.handleAlert} severity={this.state.severity}>
             {this.state.alertError}
           </Alert>
         </Snackbar>

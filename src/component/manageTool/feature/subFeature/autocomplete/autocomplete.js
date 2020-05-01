@@ -3,21 +3,19 @@ import { Autocomplete as MaterialAutocomplete } from '@material-ui/lab';
 import TextField from '@material-ui/core/TextField';
 import PropTypes from "prop-types";
 
-import validate from "../../yup";
-
 import { country } from "../../../cms";
+import { validation } from "../../../cms";
 
 const Autocomplete = (props) => {
 
-    const { isErrors, clear = false, updateState, autocompleteName, tools, subscription, autoVal = true, name, errorMessage } = props;
+    const { isErrors, clear = false, updateState, autocompleteName, tools, subscription, autoVal = true, name, errorMessage, value: globalValue= "" } = props;
     const [state, setState] = useState();
-
+    
     const handleChange = async (e, value) => {
         if (tools) {
             updateState({ tools: { ...props, autocompleteName: value } });
             if (value && !value.length) {
-                const ValidateError = await validate("country", "");
-                setState(ValidateError);
+                setState(validation.region);
             }
             else {
                 setState(false);
@@ -26,9 +24,8 @@ const Autocomplete = (props) => {
         if (subscription) {
             updateState({ subscription: { ...props, autocompleteName: value } });
             if (!clear && value && !value.length) {
-                const ValidateError = await validate("country", "");
-                updateState({ subscription: { ...props, autocompleteName: value, errorMessage: { ...errorMessage, "country": ValidateError } } })
-                setState(ValidateError);
+                updateState({ subscription: { ...props, autocompleteName: value, errorMessage: { ...errorMessage, "country": validation.region } } })
+                setState(validation.region);
             }
             else {
                 updateState({ subscription: { ...props, autocompleteName: value, errorMessage: { ...errorMessage, "country": "" } } })
@@ -38,7 +35,7 @@ const Autocomplete = (props) => {
     };
 
     const handleValue = (e, value) => {
-        updateState({ subscription: { ...props, name: value, autocompleteName: [] } })
+        updateState({ subscription: { ...props, name: value.title, autocompleteName: [] } })
         setState(false);
     };
 
@@ -46,7 +43,7 @@ const Autocomplete = (props) => {
         let errorMessage;
         let error;
         if ((isErrors && !autocompleteName.length) || !autocompleteName) {
-            errorMessage = "Region is Required";
+            errorMessage = validation.region;
             error = true;
         }
         return (
