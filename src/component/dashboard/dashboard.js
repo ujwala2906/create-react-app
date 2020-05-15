@@ -14,6 +14,7 @@ import ManageTool from "../manageTool";
 import AddTool from "../manageTool/feature";
 import Tools from "../manageTool/feature/tools";
 import Endorsement from "../endorsements";
+import Task from "../taskManagement";
 
 
 import useStyles from "./style";
@@ -61,7 +62,7 @@ const Dashboard = (props) => {
         </Hidden>
       </nav>
       <main className={classes.content}>
-        <Route path="/all" exact component={Endorsement} />
+        <Route path="/all" exact component={Task} />
         <Route path={`${path}manage-tool`} exact component={ManageTool} />
         <Route path="/manage-tool/add-tool" exact component={Tools} />
       </main>
